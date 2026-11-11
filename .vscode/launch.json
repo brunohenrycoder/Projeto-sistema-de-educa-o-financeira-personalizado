@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "AuroraApiApplication",
+            "request": "launch",
+            "mainClass": "br.com.Aurora.AuroraApiApplication",
+            "projectName": "aurora-api"
+        }
+    ]
+}

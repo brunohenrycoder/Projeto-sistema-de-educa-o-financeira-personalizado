@@ -1,0 +1,9 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.explorer.showNonJavaResources": true,
+    "code-runner.runInTerminal": true,
+    "code-runner.clearPreviousOutput": true,
+    "code-runner.executorMap": {
+        "java": "cd \"$workspaceRoot\\aurora-api\"; .\\mvnw.cmd spring-boot:run"
+    }
+}
