@@ -44,7 +44,11 @@ Definir os mecanismos de cadastro, autenticação, encerramento de sessão e val
 2. O sistema valida os dados e a unicidade do e-mail.
 3. O sistema armazena a senha em formato de hash.
 4. O sistema cria o usuário com perfil Principal e seu grupo familiar.
-5. O sistema inicia ou permite a autenticação após a confirmação do e-mail.
+5. O sistema envia um link individual de confirmação, com uso único e validade limitada.
+6. O Principal acessa o link e o backend confirma o e-mail.
+7. A conta só pode ser utilizada após a confirmação do e-mail.
+
+O link usa um fragmento (`#token=...`) para não enviar o token em requisições HTTP nem em cabeçalhos de referência. A interface que receber esse link deve enviar o token no corpo de um `POST /api/auth/confirm-email`; o backend não registra nem devolve o token.
 
 ### Login
 1. O usuário informa e-mail e senha.
@@ -59,6 +63,9 @@ Definir os mecanismos de cadastro, autenticação, encerramento de sessão e val
 
 ## 6. Critérios de aceitação
 - [ ] Um Principal consegue criar uma conta e seu grupo familiar.
+- [ ] O cadastro envia um link de confirmação sem expor o token na resposta da API.
+- [ ] Um link válido confirma o e-mail; links inválidos, expirados ou reutilizados são recusados.
+- [ ] A conta do Principal permanece pendente de confirmação até a validação do link.
 - [ ] O sistema impede o cadastro de e-mail já utilizado.
 - [ ] Senhas possuem no mínimo 8 caracteres e são armazenadas com hash.
 - [ ] Credenciais incorretas produzem resposta genérica.
