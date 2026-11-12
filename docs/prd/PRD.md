@@ -2,7 +2,7 @@
 
 - **Status:** Rascunho v1.1
 - **Data:** novembro de 2026
-- **Cliente (entrevista):** professor Mozart 
+- **Cliente (entrevista):** professor Mozart
 - **Equipe:** [preencher]
 
 ## 1. Visão Geral do Produto
@@ -16,11 +16,13 @@
 ## 2. Perfis de Usuário e Permissões
 
 ### Usuário Principal (Responsável)
+
 - Gerencia o grupo familiar.
 - Vê o panorama completo das finanças, inclusive os gastos de todos os membros, cadastra contas a pagar/receber e recebe alertas.
 - Acessa relatórios, análises, sugestões e metas.
 
 ### Dependente (Ex: Filho)
+
 - Possui acesso restrito para registrar os gastos que ele mesmo gera (ex: corridas de Uber).
 - Pode listar, editar e excluir **somente** os gastos que ele próprio registrou, sem ver totais.
 - **Restrição de Privacidade:** Não visualiza saldos, totais ou contas dos pais (conforme RN-01).
@@ -28,6 +30,7 @@
 ## 3. Escopo do Projeto
 
 ### No Escopo
+
 - Cadastro e autenticação de usuários principais e dependentes.
 - Gestão de membros do grupo familiar.
 - Cadastro e controle de contas a pagar e a receber (com suporte a repetição mensal e situações como pendente, paga, atrasada, cancelada, prevista).
@@ -39,6 +42,7 @@
 - Metas automáticas de economia.
 
 ### Fora do Escopo
+
 - Simulador de empréstimos e financiamentos (recusado explicitamente pelo cliente na entrevista).
 - Integração com Open Finance (não solicitada pelo cliente; melhoria futura).
 
@@ -47,7 +51,8 @@ Em caso de conflito entre o enunciado do projeto e a entrevista, a entrevista pr
 ## 4. Resumo dos Requisitos Funcionais (RF)
 
 **Essenciais**
-- **RF-001 — Cadastro de usuário principal:** Criação de conta, gerando perfil principal e grupo familiar automático.
+
+- **RF-001 — Cadastro de usuário principal:** Criação de conta, gerando perfil principal e grupo familiar automático. O e-mail informado deve ser confirmado antes que a conta possa ser utilizada.
 - **RF-002 — Login e encerramento de sessão:** Autenticação por e-mail e senha com tratamento de tentativas incorretas.
 - **RF-003 — Cadastro de membros da família:** Inclusão, alteração e remoção lógica (situação REMOVIDO) de membros pelo usuário principal.
 - **RF-004 — Perfis de acesso:** Restrições rígidas baseadas no perfil (Principal vs. Dependente) aplicadas em toda requisição.
@@ -59,6 +64,7 @@ Em caso de conflito entre o enunciado do projeto e a entrevista, a entrevista pr
 - **RF-011 — Saldo previsto:** Comparativo entre o que vai entrar, sair e sobrar no período.
 
 **Importantes**
+
 - **RF-009 — Consulta de gastos por membro:** Acompanhamento detalhado pelo usuário principal.
 - **RF-012 — Alerta de gastos perto da renda:** Aviso preventivo contra autoconsumo desenfreado.
 - **RF-013 — Aviso de contas próximas do vencimento:** Notificações diárias sobre contas a vencer ou atrasadas.

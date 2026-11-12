@@ -1,0 +1,8 @@
+.vscode/
+.idea/
+*.iml
+target/
+.env
+.env.*
+!.env.example
+application-local.properties
