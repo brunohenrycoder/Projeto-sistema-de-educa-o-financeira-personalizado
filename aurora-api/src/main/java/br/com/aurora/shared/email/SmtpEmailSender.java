@@ -19,6 +19,26 @@ public class SmtpEmailSender implements EmailSender {
 
     @Override
     public void sendEmailConfirmation(String recipient, String confirmationLink) {
+        sendGenericEmail(recipient, "Confirme seu e-mail - Aurora",
+                """
+                Para confirmar seu endereço de e-mail, acesse o link abaixo. O link expira em 24 horas.
+
+                %s
+                """.formatted(confirmationLink));
+    }
+
+    @Override
+    public void sendFamilyInvite(String recipient, String inviteLink) {
+        sendGenericEmail(recipient, "Convite para o Aurora",
+                """
+                Você foi convidado para participar do grupo familiar no Aurora.
+                Acesse o link abaixo para concluir o cadastro do seu perfil de Dependente.
+
+                %s
+                """.formatted(inviteLink));
+    }
+
+    private void sendGenericEmail(String recipient, String subject, String body) {
         if (fromAddress == null || fromAddress.isBlank()) {
             throw new EmailDeliveryException("O remetente do e-mail não está configurado.");
         }
@@ -26,12 +46,8 @@ public class SmtpEmailSender implements EmailSender {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromAddress);
         message.setTo(recipient);
-        message.setSubject("Confirme seu e-mail - Aurora");
-        message.setText("""
-                Para confirmar seu endereço de e-mail, acesse o link abaixo. O link expira em 24 horas.
-
-                %s
-                """.formatted(confirmationLink));
+        message.setSubject(subject);
+        message.setText(body);
 
         try {
             mailSender.send(message);
