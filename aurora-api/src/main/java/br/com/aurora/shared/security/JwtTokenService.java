@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -23,21 +22,20 @@ public class JwtTokenService {
     @Value("${security.jwt.expiration:86400000}")
     private long expirationMs;
 
-    public String generateToken(UsuarioAutenticado usuario) {
-        return generateToken(Map.of(
-                "userId", usuario.getId().toString(),
-                "familyGroupId", usuario.getFamilyGroupId().toString(),
-                "role", usuario.getRole().name()
-        ), usuario.getUsername());
+    public String generateToken(UsuarioAutenticado usuario, UUID sessionId) {
+        Date issuedAt = new Date();
+        return generateToken(usuario, sessionId, issuedAt, new Date(issuedAt.getTime() + expirationMs));
     }
 
-    public String generateToken(Map<String, Object> extraClaims, String subject) {
-        long now = System.currentTimeMillis();
+    public String generateToken(UsuarioAutenticado usuario, UUID sessionId, Date issuedAt, Date expiresAt) {
         return Jwts.builder()
-                .claims(extraClaims)
-                .subject(subject)
-                .issuedAt(new Date(now))
-                .expiration(new Date(now + expirationMs))
+                .subject(usuario.getUsername())
+                .claim("userId", usuario.getId().toString())
+                .claim("familyGroupId", usuario.getFamilyGroupId().toString())
+                .claim("role", usuario.getRole().name())
+                .claim("sessionId", sessionId.toString())
+                .issuedAt(issuedAt)
+                .expiration(expiresAt)
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -58,6 +56,15 @@ public class JwtTokenService {
 
     public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public UUID extractSessionId(String token) {
+        String sessionId = extractClaim(token, claims -> claims.get("sessionId", String.class));
+        return sessionId != null ? UUID.fromString(sessionId) : null;
+    }
+
+    public long getExpirationMs() {
+        return expirationMs;
     }
 
     public boolean isTokenValid(String token, String expectedEmail) {

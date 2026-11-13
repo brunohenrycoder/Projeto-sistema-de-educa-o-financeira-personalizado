@@ -53,7 +53,7 @@ Em caso de conflito entre o enunciado do projeto e a entrevista, a entrevista pr
 **Essenciais**
 
 - **RF-001 — Cadastro de usuário principal:** Criação de conta, gerando perfil principal e grupo familiar automático. O e-mail informado deve ser confirmado antes que a conta possa ser utilizada.
-- **RF-002 — Login e encerramento de sessão:** Autenticação por e-mail e senha com tratamento de tentativas incorretas.
+- **RF-002 — Login e encerramento de sessão:** Autenticação por e-mail e senha para Principal e Dependente; após 5 tentativas consecutivas incorretas, bloquear o identificador por 15 minutos. Logout deve revogar a sessão no servidor.
 - **RF-003 — Cadastro de membros da família:** Inclusão, alteração e remoção lógica (situação REMOVIDO) de membros pelo usuário principal.
 - **RF-004 — Perfis de acesso:** Restrições rígidas baseadas no perfil (Principal vs. Dependente) aplicadas em toda requisição.
 - **RF-005 — Cadastro de conta a pagar:** Registro de despesas previstas com valores, vencimentos, categorias e repetição.
@@ -106,7 +106,6 @@ Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 5. Os percentuais dos alertas (80% no RF-012; 30% e 50% no RF-014) fazem sentido?
 6. As categorias sugeridas atendem, ou ele quer outras?
 7. Ele precisa registrar contas parceladas (por exemplo, 6x no cartão)?
-8. Quantas tentativas de login incorretas e por quanto tempo bloquear o acesso (RF-002)?
 
 ## 8. Critérios de sucesso
 

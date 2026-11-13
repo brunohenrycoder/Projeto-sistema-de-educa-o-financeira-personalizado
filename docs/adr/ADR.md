@@ -132,16 +132,23 @@ obrigatórios de permissão e de isolamento em toda slice.
 - Senhas devem ser armazenadas como hash, utilizando BCrypt conforme a
   orientação técnica do projeto.
 - Senhas e tokens não devem ser registrados em logs.
-- Após várias tentativas incorretas consecutivas, o sistema deve
-  bloquear temporariamente o acesso, conforme RF-002. O número de
-  tentativas e o tempo de bloqueio ainda estão a definir.
+- Após cinco tentativas consecutivas incorretas para o mesmo e-mail, o
+  sistema deve bloquear novas tentativas por 15 minutos. O contador é
+  reiniciado após login bem-sucedido ou encerramento do bloqueio.
+- O controle de falhas deve ser persistido pelo hash do e-mail
+  normalizado e serializado no banco para tratar requisições simultâneas.
+- O bloqueio por e-mail cobre tentativas distribuídas entre IPs contra
+  uma mesma conta; não substitui rate limiting por IP/global contra
+  password spraying entre contas diferentes.
 - Credenciais inválidas devem produzir uma mensagem genérica, sem
   informar se o erro ocorreu no e-mail ou na senha.
 - Um membro removido não pode entrar no sistema.
-- Como o token JWT não pode ser cancelado antes de expirar, o servidor
-  confere a situação do usuário (ATIVO) em toda requisição protegida.
-  Assim, ao remover um membro, ele é bloqueado imediatamente, mesmo
-  que possua um token ainda válido, conforme RNF-03.
+- Cada JWT referencia uma sessão persistida no servidor. O filtro
+  valida em toda requisição que a sessão existe, não expirou e não foi
+  revogada; o logout revoga a sessão imediatamente.
+- O filtro também confere a situação do usuário (ATIVO) e a confirmação
+  de e-mail em toda requisição protegida, bloqueando imediatamente um
+  membro removido mesmo que possua token ainda válido.
 
 ### 3.2. Autorização e identidade do usuário
 
