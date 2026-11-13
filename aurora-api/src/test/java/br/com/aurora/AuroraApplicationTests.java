@@ -1,10 +1,10 @@
-package br.com.Aurora;
+package br.com.aurora;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AuroraApiApplicationTests {
+class AuroraApplicationTests {
 
 	@Test
 	void contextLoads() {

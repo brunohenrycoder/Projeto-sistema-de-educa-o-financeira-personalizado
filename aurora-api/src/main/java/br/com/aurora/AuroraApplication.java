@@ -1,13 +1,13 @@
-package br.com.Aurora;
+package br.com.aurora;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuroraApiApplication {
+public class AuroraApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AuroraApiApplication.class, args);
+		SpringApplication.run(AuroraApplication.class, args);
 	}
 
 }
