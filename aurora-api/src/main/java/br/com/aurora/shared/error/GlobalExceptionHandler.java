@@ -180,6 +180,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse response = ErrorResponse.of(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Falha na autenticação",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AccountTemporarilyLockedException.class)
+    public ResponseEntity<ErrorResponse> handleAccountTemporarilyLocked(
+            AccountTemporarilyLockedException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse response = ErrorResponse.of(
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                "Acesso temporariamente bloqueado",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(
             Exception ex,

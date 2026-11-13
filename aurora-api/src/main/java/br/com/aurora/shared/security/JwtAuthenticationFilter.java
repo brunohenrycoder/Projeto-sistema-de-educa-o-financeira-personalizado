@@ -2,6 +2,7 @@ package br.com.aurora.shared.security;
 
 import br.com.aurora.shared.domain.UserRepository;
 import br.com.aurora.shared.domain.UserStatus;
+import br.com.aurora.shared.domain.AuthSessionRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;
+    private final AuthSessionRepository authSessionRepository;
 
     @Override
     protected void doFilterInternal(
@@ -40,13 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt = authHeader.substring(7);
         try {
             final String userEmail = jwtTokenService.extractEmail(jwt);
+            final UUID sessionId = jwtTokenService.extractSessionId(jwt);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userEmail != null && sessionId != null
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
                 userRepository.findByEmailIgnoreCase(userEmail).ifPresent(user -> {
                     if (user.getStatus() == UserStatus.ATIVO
                             && user.isEmailConfirmed()
-                            && jwtTokenService.isTokenValid(jwt, user.getEmail())) {
-                        UsuarioAutenticado usuarioAutenticado = UsuarioAutenticado.fromUser(user);
+                            && jwtTokenService.isTokenValid(jwt, user.getEmail())
+                            && authSessionRepository.existsByIdAndUserIdAndRevokedAtIsNullAndExpiresAtAfter(
+                                    sessionId, user.getId(), LocalDateTime.now()
+                            )) {
+                        UsuarioAutenticado usuarioAutenticado = UsuarioAutenticado.fromUser(user, sessionId);
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                 usuarioAutenticado,
                                 null,
@@ -58,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 });
             }
         } catch (Exception e) {
-            log.debug("Erro ao autenticar token JWT: {}", e.getMessage());
+            log.debug("Token JWT inválido ou sessão não ativa.");
         }
 
         filterChain.doFilter(request, response);

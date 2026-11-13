@@ -26,8 +26,13 @@ public class UsuarioAutenticado implements UserDetails {
     private final UUID familyGroupId;
     private final UserStatus status;
     private final boolean emailConfirmed;
+    private final UUID sessionId;
 
     public static UsuarioAutenticado fromUser(User user) {
+        return fromUser(user, null);
+    }
+
+    public static UsuarioAutenticado fromUser(User user, UUID sessionId) {
         return UsuarioAutenticado.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -36,6 +41,7 @@ public class UsuarioAutenticado implements UserDetails {
                 .familyGroupId(user.getFamilyGroup().getId())
                 .status(user.getStatus())
                 .emailConfirmed(user.isEmailConfirmed())
+                .sessionId(sessionId)
                 .build();
     }
 
