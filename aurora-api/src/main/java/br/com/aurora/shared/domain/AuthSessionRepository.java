@@ -34,6 +34,16 @@ public interface AuthSessionRepository extends JpaRepository<AuthSession, UUID> 
 
     @Modifying
     @Query("""
+            update AuthSession session
+            set session.revokedAt = :now
+            where session.user.id = :userId
+              and session.revokedAt is null
+              and session.expiresAt > :now
+            """)
+    int revokeAllActiveByUserId(@Param("userId") UUID userId, @Param("now") LocalDateTime now);
+
+    @Modifying
+    @Query("""
             delete from AuthSession session
             where session.revokedAt is not null or session.expiresAt <= :now
             """)
