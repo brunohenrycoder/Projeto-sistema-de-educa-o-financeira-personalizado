@@ -113,4 +113,4 @@ Os acessos administrativos são aplicados no backend por `UsuarioAutenticado` e 
 
 - Autenticação e validação de sessão estão em `auth.md`.
 - Despesas estão detalhadas em `expenses.md`.
-- A validade temporal do convite não recebe duração fixa nesta especificação.
+- A validade temporal do convite é de 48 horas, conforme RN-FAM-09.

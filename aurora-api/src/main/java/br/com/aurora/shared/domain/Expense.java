@@ -62,6 +62,17 @@ public class Expense {
     @Column(name = "description", length = 255)
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private ExpenseStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cancelled_by_user_id")
+    private User cancelledBy;
+
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -76,6 +87,9 @@ public class Expense {
         }
         if (updatedAt == null) {
             updatedAt = now;
+        }
+        if (status == null) {
+            status = ExpenseStatus.ATIVO;
         }
     }
 

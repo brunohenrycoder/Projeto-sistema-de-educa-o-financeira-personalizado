@@ -64,3 +64,14 @@ O usuário responsável pelo lançamento deve ser identificado pelo servidor a p
 - [ ] Tentativas de acessar despesas de terceiros são recusadas no backend.
 - [ ] Despesas no crédito são incluídas na fatura em aberto.
 - [ ] O Dependente não recebe totais ou análises familiares.
+
+## 7. Endpoints e estado atual do backend
+
+- `POST /api/expenses` — registra uma despesa.
+- `GET /api/expenses` — lista despesas com filtros opcionais por período, categoria e integrante.
+- `PUT /api/expenses/{expenseId}` — altera uma despesa permitida ao perfil autenticado.
+- `DELETE /api/expenses/{expenseId}` — cancela logicamente a despesa, preservando o histórico.
+
+No registro com `CARTAO_CREDITO`, `installmentCount` é opcional (padrão 1; de 2 a 36 para parcelamento). O backend identifica o cartão ativo e as faturas automaticamente; o cliente não envia identificadores de cartão ou fatura. A criação da despesa, das parcelas e dos vínculos com as faturas é transacional.
+
+Despesas no crédito vinculadas a faturas fechadas, parcialmente pagas, pagas ou atrasadas não podem ser editadas ou canceladas diretamente. Em faturas abertas, a edição financeira recalcula as parcelas; o cancelamento é lógico e preserva os registros das parcelas.

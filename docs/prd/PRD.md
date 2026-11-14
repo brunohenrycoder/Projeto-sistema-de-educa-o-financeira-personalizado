@@ -99,13 +99,13 @@ Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 
 ## 7. Pontos em aberto com o cliente
 
-1. O cartão de crédito terá só registro manual, ou controle de limite e parcelas?
-2. Pode haver mais de um usuário principal (por exemplo, um casal)?
-3. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)?
-4. Os dependentes precisam de categorias pré-definidas ao lançar um gasto?
-5. Os percentuais dos alertas (80% no RF-012; 30% e 50% no RF-014) fazem sentido?
-6. As categorias sugeridas atendem, ou ele quer outras?
-7. Ele precisa registrar contas parceladas (por exemplo, 6x no cartão)?
+1. Pode haver mais de um usuário principal (por exemplo, um casal)?
+2. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)?
+3. Os dependentes precisam de categorias pré-definidas ao lançar um gasto?
+4. Os percentuais dos alertas (80% no RF-012; 30% e 50% no RF-014) fazem sentido?
+5. As categorias sugeridas atendem, ou ele quer outras?
+
+As definições de cartão manual, limite, parcelas e ciclo da fatura estão registradas em `docs/spec/credit-cards.md`.
 
 ## 8. Critérios de sucesso
 
