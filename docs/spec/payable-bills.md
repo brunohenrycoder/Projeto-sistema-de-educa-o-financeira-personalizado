@@ -15,6 +15,14 @@ Campos obrigatórios:
 - categoria;
 - recorrência.
 
+Categorias permitidas: `MORADIA`, `ALIMENTACAO`, `TRANSPORTE`, `SAUDE`,
+`EDUCACAO`, `LAZER`, `CONTAS_CONSUMO`, `ASSINATURAS`, `IMPOSTOS` e
+`OUTROS`. A API rejeita valores fora dessa lista.
+
+Recorrências permitidas: `SEM_RECORRENCIA` e `MENSAL`. A recorrência é
+obrigatória no cadastro. `SEM_RECORRENCIA` cria uma única ocorrência;
+`MENSAL` cria a ocorrência seguinte quando a atual é quitada.
+
 ### PAY-02 — Consultar e acompanhar
 - O Principal pode consultar contas e seus status.
 - O sistema deve manter histórico das contas.
@@ -24,11 +32,48 @@ Campos obrigatórios:
 - O Principal pode marcar uma conta como paga.
 - Deve informar a data do pagamento e o método de pagamento.
 - O método de pagamento é obrigatório no momento da quitação.
-- O sistema pode registrar o valor efetivamente pago, quando informado.
+- O valor efetivamente pago é opcional; quando informado, deve ser igual
+  ao valor integral da conta. Pagamentos parciais não são permitidos.
+- Uma conta quitada gera uma despesa correspondente em EXPENSES.
+- Para `CARTAO_CREDITO`, a despesa é associada ao cartão e à fatura pelo
+  ledger existente de CREDIT CARDS.
 
 ### PAY-04 — Recorrência mensal
 - Para uma conta com recorrência mensal, ao quitar a ocorrência atual o sistema deve criar a próxima ocorrência.
 - A nova ocorrência deve manter os dados pertinentes da configuração recorrente.
+- A próxima data de vencimento é calculada a partir da ocorrência quitada,
+  avançando um mês e preservando o dia configurado. Em meses sem esse dia,
+  usa-se o último dia do mês; nos meses seguintes, retoma-se o dia original
+  (por exemplo, 31/jan → 28/fev → 31/mar).
+- A criação da ocorrência seguinte é idempotente; não pode haver duas
+  ocorrências com o mesmo número na série.
+- Só uma ocorrência futura é criada por quitação. Se a ocorrência mensal
+  for cancelada individualmente antes da criação da seguinte, a série
+  permanece ativa e a próxima ocorrência é mantida/gerada.
+
+### PAY-06 — Atualizar conta e recorrência
+- Atualizar uma ocorrência altera somente aquela conta.
+- A alteração da configuração de uma série mensal afeta somente
+  ocorrências futuras não pagas nem canceladas; ocorrências pagas ou
+  canceladas preservam os dados e o histórico.
+- Atualizar a configuração mensal permite alterar descrição, valor,
+  categoria e próximo vencimento. A série permanece mensal.
+
+### PAY-07 — Cancelar conta
+- O Principal escolhe entre `SOMENTE_OCORRENCIA` e
+  `OCORRENCIA_E_FUTURAS`.
+- `SOMENTE_OCORRENCIA` cancela apenas a ocorrência selecionada e mantém
+  a série ativa.
+- `OCORRENCIA_E_FUTURAS` cancela a ocorrência selecionada e as futuras
+  ainda não pagas, encerrando a série.
+- Contas pagas não podem ser canceladas. Contas já canceladas mantêm o
+  histórico e não são reativadas.
+
+### PAY-08 — Estados da conta
+- Os estados são `PENDENTE`, `PAGA`, `ATRASADA` e `CANCELADA`.
+- Uma conta com vencimento anterior à data atual é criada como
+  `ATRASADA`; as demais são criadas como `PENDENTE`.
+- O histórico de mudanças de estado e os pagamentos são preservados.
 
 ### PAY-05 — Atraso
 - Uma conta não paga após o vencimento deve passar automaticamente para o status `ATRASADA`.
@@ -42,6 +87,10 @@ Campos obrigatórios:
 - **RN-PAY-05:** cancelar não equivale a excluir; o histórico deve ser preservado.
 - **RN-PAY-06:** a quitação de uma ocorrência mensal gera a próxima ocorrência.
 - **RN-PAY-07:** a conta deve manter seu histórico de alterações de status e pagamentos.
+- **RN-PAY-08:** as categorias aceitas são somente as dez opções definidas em PAY-01.
+- **RN-PAY-09:** a quitação é integral; o valor informado, quando presente, deve ser igual ao valor da conta.
+- **RN-PAY-10:** os estados válidos são `PENDENTE`, `PAGA`, `ATRASADA` e `CANCELADA`.
+- **RN-PAY-11:** uma despesa é criada na mesma transação da quitação; o vínculo único entre conta paga e despesa impede duplicidade.
 
 ## 5. Fluxos principais
 ### Cadastro
@@ -60,11 +109,28 @@ Campos obrigatórios:
 1. O sistema verifica contas não pagas cujo vencimento já passou.
 2. Atualiza o status para `ATRASADA`.
 3. Mantém a conta visível no histórico e nos avisos pertinentes.
+4. A listagem apresenta `ATRASADA` imediatamente quando o vencimento já passou,
+   mesmo antes da persistência pela rotina automática.
+5. A rotina automática é executada diariamente e só seleciona contas `PENDENTE`.
 
-## 6. Critérios de aceitação
+## 6. Endpoints
+- `POST /api/payable-bills` — cadastra conta.
+- `GET /api/payable-bills` — lista as contas do grupo familiar.
+- `PUT /api/payable-bills/{billId}` — atualiza uma ocorrência não paga nem cancelada.
+- `PUT /api/payable-bills/{billId}/recurrence` — atualiza a configuração de série mensal e as ocorrências futuras elegíveis.
+- `POST /api/payable-bills/{billId}/cancel` — cancela uma ocorrência conforme o escopo informado.
+- `POST /api/payable-bills/{billId}/payments` — registra quitação e despesa correspondente.
+- `GET /api/payable-bills/{billId}/payments` — consulta o histórico de pagamentos.
+
+Todos os endpoints exigem autenticação e perfil Principal. IDs são
+sempre consultados dentro do grupo familiar autenticado.
+
+## 7. Critérios de aceitação
 - [ ] Apenas o Principal acessa o módulo.
 - [ ] O cadastro exige descrição, valor positivo, vencimento, categoria e recorrência.
+- [ ] Categorias e recorrências fora das listas permitidas são rejeitadas.
 - [ ] O método de pagamento é exigido na quitação.
+- [ ] A quitação integral cria exatamente uma despesa correspondente.
 - [ ] Contas vencidas e não pagas tornam-se `ATRASADA`.
 - [ ] O cancelamento preserva o registro.
 - [ ] A quitação de conta mensal cria a próxima ocorrência.

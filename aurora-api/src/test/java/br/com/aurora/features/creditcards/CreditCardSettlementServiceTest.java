@@ -103,7 +103,7 @@ class CreditCardSettlementServiceTest extends CreditCardServiceTestSupport {
     @Test
     void refundCreditWaitsForAnOpenInvoiceAndIsAppliedOnlyOnce() {
         User principal = createUser(Role.PRINCIPAL, "refund-credit-principal@aurora.com", null);
-        var card = createCard(principal, new BigDecimal("500.00"), 15, 10);
+        var card = createCard(principal, new BigDecimal("500.00"), 28, 10);
         setAuthenticatedUser(principal);
         var oldExpense = registerExpense(principal, LocalDate.of(2026, 8, 1), new BigDecimal("20.00"), 1);
 
@@ -113,9 +113,10 @@ class CreditCardSettlementServiceTest extends CreditCardServiceTestSupport {
         assertThat(refundCreditRepository.sumPendingAmountByCardId(card.getId()))
                 .isEqualByComparingTo("10.00");
 
-        var newExpense = registerExpense(principal, LocalDate.now(), new BigDecimal("30.00"), 1);
+        var newExpense = registerExpense(principal, LocalDate.now().plusDays(1), new BigDecimal("30.00"), 1);
         CreditCardInvoice openInvoice = installmentRepository
                 .findByExpenseIdOrderByInstallmentNumber(newExpense.getId()).getFirst().getInvoice();
+        assertThat(openInvoice.getStatus()).isEqualTo(CreditCardInvoiceStatus.OPEN);
         assertThat(openInvoice.getCreditAmount()).isEqualByComparingTo("10.00");
         assertThat(openInvoice.getOutstandingAmount()).isEqualByComparingTo("20.00");
         assertThat(refundCreditRepository.sumPendingAmountByCardId(card.getId()))
