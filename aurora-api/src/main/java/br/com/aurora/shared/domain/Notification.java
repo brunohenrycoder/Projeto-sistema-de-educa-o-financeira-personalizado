@@ -2,6 +2,8 @@ package br.com.aurora.shared.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,18 +24,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "financial_overview_alerts", uniqueConstraints = {
-        @UniqueConstraint(
-                name = "uk_financial_overview_alert_family_month_threshold",
-                columnNames = {"family_group_id", "reference_month", "threshold_percent"}
-        )
-})
+@Table(name = "notifications")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FinancialOverviewAlert {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -45,14 +41,28 @@ public class FinancialOverviewAlert {
     @JoinColumn(name = "family_group_id", nullable = false)
     private FamilyGroup familyGroup;
 
-    @Column(name = "reference_month", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "notification_type", nullable = false, length = 40)
+    private NotificationType type;
+
+    @Column(name = "description", nullable = false, length = 1000)
+    private String description;
+
+    @Column(name = "reference_month")
     private LocalDate referenceMonth;
 
-    @Column(name = "threshold_percent", nullable = false, precision = 5, scale = 2)
+    @Column(name = "threshold_percent", precision = 5, scale = 2)
     private BigDecimal thresholdPercent;
 
-    @Column(name = "commitment_percent", nullable = false, precision = 12, scale = 2)
+    @Column(name = "commitment_percent", precision = 12, scale = 2)
     private BigDecimal commitmentPercent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payable_bill_id")
+    private PayableBill payableBill;
+
+    @Column(name = "notification_date")
+    private LocalDate notificationDate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

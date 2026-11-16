@@ -215,4 +215,4 @@ O cálculo somente deve ocorrer quando a renda familiar considerada for maior qu
 - Pagamentos de contas a pagar são contabilizados pela data efetiva uma única vez; a despesa vinculada não é somada novamente no fluxo de caixa.
 - Compras com cartão participam do indicador de despesas pelo valor de cada parcela na competência da fatura. Estornos reduzem as despesas na competência do registro e parcelas futuras canceladas ou reduzidas pelo estorno não são projetadas novamente.
 - O fluxo de caixa contabiliza pagamentos de faturas por sua data efetiva e o saldo pendente pelo vencimento. Compras e créditos de estorno não são somados novamente como saídas.
-- Os alertas de 80% são verificados diariamente e persistidos uma única vez por grupo familiar, mês e limite. A consulta GET não cria nem altera alertas.
+- O cálculo do indicador de comprometimento é reutilizado por `NOTIFICATIONS`, que verifica e persiste o alerta de 80% diariamente, uma única vez por grupo familiar, mês e limite. A consulta GET da visão financeira não cria nem altera notificações.

@@ -1,4 +1,4 @@
-package br.com.aurora.features.financialoverview;
+package br.com.aurora.shared.domain;
 
 import java.math.BigDecimal;
 

@@ -1,10 +1,11 @@
 package br.com.aurora.features.financialoverview.getmonthlyfinancialoverview;
 
-import br.com.aurora.features.financialoverview.FinancialOverviewAlertRepository;
-import br.com.aurora.features.financialoverview.FinancialOverviewCalculator;
-import br.com.aurora.features.financialoverview.FinancialOverviewPolicy;
-import br.com.aurora.features.financialoverview.FinancialOverviewTotals;
-import br.com.aurora.shared.domain.FinancialOverviewAlert;
+import br.com.aurora.shared.domain.FinancialOverviewCalculator;
+import br.com.aurora.shared.domain.FinancialOverviewPolicy;
+import br.com.aurora.shared.domain.FinancialOverviewTotals;
+import br.com.aurora.shared.domain.Notification;
+import br.com.aurora.shared.domain.NotificationRepository;
+import br.com.aurora.shared.domain.NotificationType;
 import br.com.aurora.shared.error.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class GetMonthlyFinancialOverviewService {
 
     private final FinancialOverviewAccess access;
     private final FinancialOverviewCalculator calculator;
-    private final FinancialOverviewAlertRepository alertRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
     public GetMonthlyFinancialOverviewResponse get(String requestedMonth) {
@@ -38,9 +39,10 @@ public class GetMonthlyFinancialOverviewService {
                 && totals.expensesConsidered().multiply(HUNDRED)
                         .compareTo(totals.incomeConsidered()
                                 .multiply(FinancialOverviewPolicy.ALERT_THRESHOLD_PERCENT)) >= 0;
-        FinancialOverviewAlert alert = alertRepository
-                .findByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
+        Notification alert = notificationRepository
+                .findByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
                         principal.getFamilyGroup().getId(),
+                        NotificationType.ALERTA_DESPESAS,
                         month.atDay(1),
                         FinancialOverviewPolicy.ALERT_THRESHOLD_PERCENT)
                 .orElse(null);
@@ -72,7 +74,7 @@ public class GetMonthlyFinancialOverviewService {
         }
     }
 
-    private GetMonthlyFinancialOverviewResponse.Alert toAlertResponse(FinancialOverviewAlert alert) {
+    private GetMonthlyFinancialOverviewResponse.Alert toAlertResponse(Notification alert) {
         return new GetMonthlyFinancialOverviewResponse.Alert(
                 alert.getId(),
                 alert.getReferenceMonth(),

@@ -1,4 +1,4 @@
-package br.com.aurora.features.financialoverview.checkfinancialoverviewalerts;
+package br.com.aurora.features.notifications.checkfinancialoverviewalerts;
 
 import br.com.aurora.shared.domain.Role;
 import br.com.aurora.shared.domain.UserRepository;
@@ -16,7 +16,7 @@ public class CheckFinancialOverviewAlertsScheduler {
     private final UserRepository userRepository;
     private final CheckFinancialOverviewAlertsService service;
 
-    @Scheduled(cron = "0 25 0 * * *")
+    @Scheduled(cron = "0 35 0 * * *")
     public void checkCurrentMonth() {
         YearMonth currentMonth = YearMonth.now();
         for (var familyGroupId : userRepository.findActivePrincipalFamilyGroupIds(

@@ -19,6 +19,12 @@ public interface PayableBillRepository extends JpaRepository<PayableBill, UUID> 
     @EntityGraph(attributePaths = {"series"})
     List<PayableBill> findByFamilyGroupIdOrderByDueDateAsc(UUID familyGroupId);
 
+    List<PayableBill> findByFamilyGroupIdAndStatusInAndDueDateLessThanEqualOrderByDueDateAsc(
+            UUID familyGroupId,
+            List<PayableBillStatus> statuses,
+            LocalDate dueDate
+    );
+
     @EntityGraph(attributePaths = {"series"})
     Optional<PayableBill> findByIdAndFamilyGroupId(UUID id, UUID familyGroupId);
 

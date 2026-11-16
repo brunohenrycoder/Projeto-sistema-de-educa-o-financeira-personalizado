@@ -1,18 +1,5 @@
-package br.com.aurora.features.financialoverview;
+package br.com.aurora.shared.domain;
 
-import br.com.aurora.shared.domain.CreditCardInstallment;
-import br.com.aurora.shared.domain.CreditCardInvoice;
-import br.com.aurora.shared.domain.CreditCardPayment;
-import br.com.aurora.shared.domain.CreditCardRefund;
-import br.com.aurora.shared.domain.Expense;
-import br.com.aurora.shared.domain.ExpensePaymentMethod;
-import br.com.aurora.shared.domain.ExpenseStatus;
-import br.com.aurora.shared.domain.PayableBill;
-import br.com.aurora.shared.domain.PayableBillPayment;
-import br.com.aurora.shared.domain.PayableBillStatus;
-import br.com.aurora.shared.domain.Receivable;
-import br.com.aurora.shared.domain.ReceivableConfirmation;
-import br.com.aurora.shared.domain.ReceivableStatus;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

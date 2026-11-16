@@ -5,8 +5,8 @@ import br.com.aurora.features.creditcards.registercreditcardrefund.RegisterCredi
 import br.com.aurora.features.creditcards.registercreditcardrefund.RegisterCreditCardRefundService;
 import br.com.aurora.features.expenses.registerexpense.RegisterExpenseRequest;
 import br.com.aurora.features.expenses.registerexpense.RegisterExpenseService;
-import br.com.aurora.features.financialoverview.checkfinancialoverviewalerts.CheckFinancialOverviewAlertsService;
-import br.com.aurora.features.financialoverview.checkfinancialoverviewalerts.CheckFinancialOverviewAlertsScheduler;
+import br.com.aurora.features.notifications.checkfinancialoverviewalerts.CheckFinancialOverviewAlertsService;
+import br.com.aurora.features.notifications.checkfinancialoverviewalerts.CheckFinancialOverviewAlertsScheduler;
 import br.com.aurora.features.financialoverview.getmonthlyfinancialoverview.GetMonthlyFinancialOverviewService;
 import br.com.aurora.features.payablebills.registerpayablebillpayment.RegisterPayableBillPaymentRequest;
 import br.com.aurora.features.payablebills.registerpayablebillpayment.RegisterPayableBillPaymentService;
@@ -21,7 +21,10 @@ import br.com.aurora.shared.domain.Expense;
 import br.com.aurora.shared.domain.ExpensePaymentMethod;
 import br.com.aurora.shared.domain.ExpenseRepository;
 import br.com.aurora.shared.domain.ExpenseStatus;
-import br.com.aurora.shared.domain.FinancialOverviewAlert;
+import br.com.aurora.shared.domain.FinancialOverviewPolicy;
+import br.com.aurora.shared.domain.Notification;
+import br.com.aurora.shared.domain.NotificationRepository;
+import br.com.aurora.shared.domain.NotificationType;
 import br.com.aurora.shared.domain.PayableBill;
 import br.com.aurora.shared.domain.PayableBillCategory;
 import br.com.aurora.shared.domain.PayableBillPayment;
@@ -83,7 +86,7 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
     @Autowired private GetMonthlyFinancialOverviewService overviewService;
     @Autowired private CheckFinancialOverviewAlertsService alertService;
     @Autowired private CheckFinancialOverviewAlertsScheduler alertScheduler;
-    @Autowired private FinancialOverviewAlertRepository alertRepository;
+    @Autowired private NotificationRepository notificationRepository;
     @Autowired private ReceivableSeriesRepository receivableSeriesRepository;
     @Autowired private ReceivableRepository receivableRepository;
     @Autowired private ReceivableConfirmationRepository confirmationRepository;
@@ -300,8 +303,9 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
         var result = overviewService.get(month.toString());
         assertThat(result.thresholdReached()).isTrue();
         assertThat(result.alert()).isNull();
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                principal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)).isZero();
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                month.atDay(1), ALERT_THRESHOLD)).isZero();
         assertThat(overviewService.get(null).period()).isEqualTo(YearMonth.now());
     }
 
@@ -317,11 +321,13 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
         addExpense(principal, "10.00", month.atDay(3), ExpensePaymentMethod.PIX, ExpenseStatus.ATIVO);
         alertService.checkFamily(principal.getFamilyGroup().getId(), month);
 
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                principal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
-        FinancialOverviewAlert savedAlert = alertRepository
-                .findByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                        principal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
+        Notification savedAlert = notificationRepository
+                .findByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                        principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                        month.atDay(1), ALERT_THRESHOLD)
                 .orElseThrow();
         assertThat(savedAlert.getCommitmentPercent()).isEqualByComparingTo("80.00");
         setAuthenticatedUser(principal);
@@ -331,8 +337,9 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
                 Role.PRINCIPAL, "overview-zero-income-" + java.util.UUID.randomUUID() + "@aurora.com", null);
         addExpense(noIncomePrincipal, "100.00", month.atDay(4), ExpensePaymentMethod.PIX, ExpenseStatus.ATIVO);
         alertService.checkFamily(noIncomePrincipal.getFamilyGroup().getId(), month);
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                noIncomePrincipal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)).isZero();
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                noIncomePrincipal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                month.atDay(1), ALERT_THRESHOLD)).isZero();
     }
 
     @Test
@@ -346,8 +353,9 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
 
         alertScheduler.checkCurrentMonth();
 
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                principal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
     }
 
     @Test
@@ -382,14 +390,16 @@ class FinancialOverviewServiceTest extends CreditCardServiceTestSupport {
             executor.shutdownNow();
         }
 
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                principal.getFamilyGroup().getId(), month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                month.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
         YearMonth nextMonth = month.plusMonths(1);
         addReceivable(principal, nextMonth.atDay(1), "100.00", ReceivableStatus.RECEBIDA, nextMonth.atDay(1));
         addExpense(principal, "80.00", nextMonth.atDay(2), ExpensePaymentMethod.PIX, ExpenseStatus.ATIVO);
         alertService.checkFamily(principal.getFamilyGroup().getId(), nextMonth);
-        assertThat(alertRepository.countByFamilyGroupIdAndReferenceMonthAndThresholdPercent(
-                principal.getFamilyGroup().getId(), nextMonth.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
+        assertThat(notificationRepository.countByFamilyGroupIdAndTypeAndReferenceMonthAndThresholdPercent(
+                principal.getFamilyGroup().getId(), NotificationType.ALERTA_DESPESAS,
+                nextMonth.atDay(1), ALERT_THRESHOLD)).isEqualTo(1);
     }
 
     private Receivable addReceivable(

@@ -48,11 +48,26 @@ Especificar os alertas e lembretes automáticos relacionados a vencimentos, desp
 4. Registra e apresenta o alerta ao Principal, se aplicável.
 
 ## 6. Critérios de aceitação
-- [ ] Lembretes de contas próximas do vencimento são diários.
-- [ ] A antecedência padrão é de 3 dias.
-- [ ] Contas atrasadas são destacadas.
-- [ ] Contas pagas deixam de gerar lembretes.
-- [ ] O limite de despesas é 80% da renda.
+- [x] Lembretes de contas próximas do vencimento são diários.
+- [x] A antecedência padrão é de 3 dias.
+- [x] Contas atrasadas são destacadas.
+- [x] Contas pagas deixam de gerar lembretes.
+- [x] O limite de despesas é 80% da renda.
 - [ ] Os níveis de endividamento são 30% e 50%.
-- [ ] Alertas familiares são exibidos somente ao Principal.
-- [ ] O mesmo alerta não é duplicado no mês.
+- [x] Alertas familiares são exibidos somente ao Principal.
+- [x] O mesmo alerta não é duplicado no mês.
+
+## 7. API implementada
+
+- `GET /api/notifications` — lista as notificações do grupo familiar do Principal autenticado, ordenadas das mais recentes para as mais antigas. Não aceita identificador de grupo familiar e não altera registros.
+- Cada item retorna o tipo, a descrição e a data de criação.
+
+## 8. Rotinas automáticas
+
+- Lembretes são verificados diariamente para contas pendentes ou atrasadas: nos três dias anteriores ao vencimento e enquanto estiverem atrasadas. Contas pagas ou canceladas não geram novos lembretes.
+- O alerta de 80% é verificado diariamente e criado uma única vez por grupo familiar, mês e limite, com base nos indicadores calculados por `FINANCIAL OVERVIEW`.
+- A rotina de alertas não depende de uma consulta à visão financeira nem de um Principal estar conectado.
+
+## 9. Ponto pendente
+
+- `NOT-03` não foi implementado: as entidades e categorias atuais não identificam com segurança compromissos relacionados a dívidas. Os limites de 30% e 50% aguardam a definição de uma classificação explícita; categorias genéricas não são presumidas como dívidas.
