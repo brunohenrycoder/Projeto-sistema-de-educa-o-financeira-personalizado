@@ -23,6 +23,8 @@ Especificar os alertas e lembretes automáticos relacionados a vencimentos, desp
 - O sistema deve utilizar os limites de 30% (atenção) e 50% (alerta).
 - Os alertas são destinados ao Principal.
 - O sistema não deve duplicar o mesmo alerta no mesmo mês.
+- elemento a ser realizado na versão final do sistema
+
 
 ## 4. Regras de negócio
 - **RN-NOT-01:** lembretes de contas a pagar usam antecedência padrão de 3 dias.

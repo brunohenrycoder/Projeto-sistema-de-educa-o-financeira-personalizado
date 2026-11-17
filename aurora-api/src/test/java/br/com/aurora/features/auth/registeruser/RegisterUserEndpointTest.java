@@ -34,7 +34,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import org.mockito.ArgumentCaptor;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,6 +68,26 @@ class RegisterUserEndpointTest {
 
     @MockitoBean
     private EmailSender emailSender;
+
+    @Test
+    @DisplayName("Deve aceitar preflight do Vite com headers JWT e conteúdo JSON")
+    void shouldAllowViteCorsPreflight() throws Exception {
+        mockMvc.perform(options("/api/auth/login")
+                        .header("Origin", "http://localhost:5173")
+                        .header("Access-Control-Request-Method", "POST")
+                        .header("Access-Control-Request-Headers", "authorization,content-type"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string(
+                        "Access-Control-Allow-Headers",
+                        containsStringIgnoringCase("authorization")
+                ))
+                .andExpect(header().string(
+                        "Access-Control-Allow-Headers",
+                        containsStringIgnoringCase("content-type")
+                ))
+                .andExpect(header().doesNotExist("Access-Control-Allow-Credentials"));
+    }
 
     @Test
     @DisplayName("Deve cadastrar usuário principal e criar grupo familiar com sucesso")
@@ -131,6 +154,7 @@ class RegisterUserEndpointTest {
         ArgumentCaptor<String> linkCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailSender).sendEmailConfirmation(eq("mariana.confirmacao@example.com"), linkCaptor.capture());
         String confirmationLink = linkCaptor.getValue();
+        assertThat(confirmationLink).startsWith("http://localhost:5173/confirm-email#token=");
         assertThat(confirmationLink).contains("#token=");
         String rawToken = confirmationLink.substring(confirmationLink.indexOf("#token=") + "#token=".length());
         String tokenHash = TokenHashUtils.hashToken(rawToken);

@@ -34,7 +34,7 @@ public class InviteDependentService {
     private final FamilyInviteRepository familyInviteRepository;
     private final EmailSender emailSender;
 
-    @Value("${app.family-invite-url:http://localhost:3000/family-invite}")
+    @Value("${app.family-invite-url}")
     private String familyInviteUrl;
 
     @Transactional

@@ -114,7 +114,7 @@ O sistema deverá permitir que o Principal altere os dados de um recebimento esp
 - **RN-REC-11:** todas as operações deverão respeitar o grupo familiar do Principal autenticado.
 - **RN-REC-12:** ocorrências recebidas ou canceladas não deverão ser alteradas automaticamente por mudanças na configuração da recorrência.
 - **RN-REC-13:** o sistema deverá evitar a geração duplicada de ocorrências recorrentes.
-- **RN-REC-14:** um recebimento confirmado deverá gerar ou atualizar o lançamento financeiro correspondente, sem duplicar a entrada nas visões financeiras.
+- **RN-REC-14:** um recebimento confirmado deverá compor as entradas realizadas da visão financeira pela data efetiva e pelo valor confirmado, sem criar um lançamento duplicado.
 
 ### Status dos recebimentos
 
@@ -210,4 +210,4 @@ Os endpoints aceitam os prefixos `/api/receivables` e `/receivables` e exigem au
 
 ## 8. Integração financeira
 
-O registro de confirmação e sua data/valor são a fonte de verdade para a integração financeira futura. Como o módulo de visão financeira/ledger ainda não está implementado, esta entrega não cria uma despesa ou um segundo lançamento financeiro. A integração prevista em RN-REC-14 deverá reutilizar a confirmação, sem duplicar valores quando a visão financeira for implementada.
+O registro de confirmação e sua data/valor são a fonte das entradas realizadas na visão financeira: o valor confirmado é contabilizado pela data efetiva do recebimento. Recebimentos pendentes ou atrasados são considerados entradas previstas pela data esperada; cancelados não entram no cálculo. A confirmação não cria um segundo lançamento financeiro.

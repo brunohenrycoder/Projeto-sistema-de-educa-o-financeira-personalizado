@@ -18,9 +18,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
@@ -49,6 +52,9 @@ class InviteDependentServiceTest {
         assertThat(familyInviteRepository.findById(response.getInviteId()))
                 .map(FamilyInvite::getStatus)
                 .contains(FamilyInviteStatus.PENDENTE);
+        ArgumentCaptor<String> inviteLink = ArgumentCaptor.forClass(String.class);
+        verify(emailSender).sendFamilyInvite(eq("new-dependent@aurora.com"), inviteLink.capture());
+        assertThat(inviteLink.getValue()).startsWith("http://localhost:5173/family-invite#token=");
     }
 
     @Test

@@ -21,7 +21,6 @@ O sistema possui dois perfis de acesso: **Principal** e **Dependente**, com perm
 ### Autenticação e gerenciamento familiar
 - Cadastro de usuário Principal.
 - Login e autenticação.
-- Recuperação de senha.
 - Convite e gerenciamento de Dependentes.
 - Controle de permissões por perfil.
 
@@ -37,7 +36,7 @@ O sistema possui dois perfis de acesso: **Principal** e **Dependente**, com perm
 - Acompanhamento do saldo projetado.
 - Relatórios financeiros.
 - Identificação de padrões de consumo.
-- Alertas financeiros.
+- Alertas financeiros implementados; o alerta de endividamento NOT-03 permanece pendente de uma definição explícita de dívidas.
 - Sugestões de economia e metas de poupança.
 
 ## Perfis de usuário
@@ -60,8 +59,7 @@ A aplicação aplica as permissões no backend, garantindo que um usuário não 
 - **Flyway** — versionamento e controle das migrations do banco.
 
 ### Frontend
-- **React** — construção da interface.
-- **Vite** — ferramenta de desenvolvimento e build.
+- A interface React + Vite ainda não está incluída neste repositório; as configurações abaixo preparam sua integração.
 
 ### Banco de dados
 - **PostgreSQL** — armazenamento das informações.
@@ -70,34 +68,30 @@ A aplicação aplica as permissões no backend, garantindo que um usuário não 
 
 O backend utiliza **Vertical Slice Architecture (VSA)**, organizando o código por funcionalidades. Cada funcionalidade concentra os componentes necessários para sua implementação.
 
-O frontend utiliza organização baseada em funcionalidades (*Feature-based Architecture*), mantendo os componentes e recursos relacionados próximos uns dos outros.
+Quando implementado, o frontend deverá utilizar organização baseada em funcionalidades (*Feature-based Architecture*).
 
 A estrutura também possui uma área compartilhada (`shared`), destinada a componentes e recursos utilizados por diferentes funcionalidades.
 
 ## Organização do projeto
 
 ```text
-aurora/
-├── backend/
-│   └── aurora-api/
-├── frontend/
-├── docs/
-│   └── ADR.md
-├── spec/
-├── .gitignore
+.
+├── .agents/
+├── aurora-api/
+│   ├── src/main/java/br/com/aurora/features/
+│   ├── src/main/java/br/com/aurora/shared/
+│   └── src/main/resources/db/migration/
+├── docs/spec/
 └── README.md
 ```
-
-*Observação: a estrutura apresentada representa a organização planejada do projeto. Os diretórios e documentos serão adicionados conforme o desenvolvimento.*
 
 ## Pré-requisitos
 
 Antes de executar o projeto, é necessário ter instalado:
 
-- Java JDK (versão compatível com o projeto).
+- Java JDK 25.
 - Maven ou utilizar o Maven Wrapper incluído no backend.
 - PostgreSQL.
-- Node.js e npm (para o frontend).
 - Git.
 
 ## Configuração do ambiente
@@ -114,28 +108,45 @@ cd <PASTA_DO_PROJETO>
 Acesse o diretório do Spring Boot:
 
 ```bash
-cd backend/aurora-api
+cd aurora-api
 ```
 
-Crie um arquivo `.env` com as seguintes variáveis:
-
-```env
-DB_URL=jdbc:postgresql://localhost:5432/aurora
-DB_USERNAME=postgres
-DB_PASSWORD=sua_senha
-```
-
-Crie também um `.env.example` com os mesmos nomes de variáveis e valores de exemplo, sem credenciais reais.
-
-**Importante:** o Spring Boot não carrega arquivos `.env` automaticamente. As variáveis precisam estar disponíveis no ambiente de execução.
-
-No PowerShell, por exemplo:
+Copie o modelo para `.env` e substitua os valores indicados para uso local:
 
 ```powershell
-$env:DB_URL="jdbc:postgresql://localhost:5432/aurora"
-$env:DB_USERNAME="postgres"
-$env:DB_PASSWORD="sua_senha"
+Copy-Item .env.example .env
 ```
+
+O Spring carrega esse arquivo local quando ele existe. O `.env` está ignorado pelo Git; não versione credenciais. Em ambientes compartilhados, forneça as variáveis pelo mecanismo de configuração do ambiente.
+
+Configurações principais:
+
+| Variável | Finalidade | Exemplo de desenvolvimento |
+|---|---|---|
+| `DB_URL` | URL JDBC do PostgreSQL | `jdbc:postgresql://localhost:5432/aurora` |
+| `DB_USERNAME` | Usuário do banco | `postgres` |
+| `DB_PASSWORD` | Senha do banco; obrigatória | Defina localmente; o modelo não contém credencial |
+| `JWT_SECRET` | Chave HMAC; obrigatória, mínimo de 32 bytes UTF-8 | Gere uma chave aleatória local; não use o placeholder |
+| `JWT_EXPIRATION` | Validade do JWT em milissegundos | `86400000` |
+| `CORS_ALLOWED_ORIGINS` | Origens explícitas permitidas, separadas por vírgula | `http://localhost:5173` |
+| `EMAIL_CONFIRMATION_URL` | Página de confirmação de e-mail | `http://localhost:5173/confirm-email` |
+| `FAMILY_INVITE_URL` | Página de convite familiar | `http://localhost:5173/family-invite` |
+| `SMTP_HOST`, `SMTP_PORT` | Servidor e porta SMTP | `localhost`, `1025` para um servidor local de captura de e-mail |
+| `SMTP_USERNAME`, `SMTP_PASSWORD` | Credenciais SMTP, quando exigidas | Fornecidas pelo ambiente/provedor |
+| `SMTP_AUTH` | Habilita autenticação SMTP | `true` ou `false` |
+| `SMTP_STARTTLS`, `SMTP_STARTTLS_REQUIRED` | Habilita/exige STARTTLS | `true` ou `false` |
+| `SMTP_SSL` | Habilita SSL SMTP | `true` ou `false`; não combinar com STARTTLS sem suporte do provedor |
+| `SMTP_CONNECTION_TIMEOUT`, `SMTP_TIMEOUT`, `SMTP_WRITE_TIMEOUT` | Tempos-limite SMTP em milissegundos | `5000` |
+| `MAIL_FROM` | Remetente obrigatório no envio de e-mails | Endereço autorizado pelo provedor |
+
+```powershell
+$env:DB_PASSWORD="sua_senha_local"
+$env:JWT_SECRET="chave_aleatoria_local_com_pelo_menos_32_bytes"
+```
+
+As URLs de confirmação e convite apontam por padrão para a porta `5173` do Vite. CORS permite apenas `CORS_ALLOWED_ORIGINS`, incluindo os headers `Authorization` e `Content-Type` necessários ao JWT; autenticação por cookie/credenciais não está habilitada. Em ambiente compartilhado, configure as origens e URLs públicas apropriadas. Não use `*`.
+
+O SMTP não envia e-mails sem configuração externa. Configure host, porta, autenticação, TLS/SSL e remetente conforme o provedor escolhido; o projeto não define um provedor nem credenciais.
 
 ### 3. Executar o backend
 
@@ -148,22 +159,13 @@ No diretório do backend, execute:
 Para executar os testes:
 
 ```powershell
-.\mvnw.cmd clean test
+.\mvnw.cmd test
 ```
 
 As migrations do banco são gerenciadas pelo Flyway e ficam em:
 
 ```text
 src/main/resources/db/migration/
-```
-
-### 4. Executar o frontend
-
-Após a configuração do frontend, acesse seu diretório e execute:
-
-```bash
-npm install
-npm run dev
 ```
 
 ## Segurança
