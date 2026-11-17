@@ -15,19 +15,16 @@ public class FinancialOverviewCalculator {
     private static final BigDecimal ZERO = new BigDecimal("0.00");
 
     private final FinancialOverviewDataRepository dataRepository;
+    private final FinancialConsumptionCalculator consumptionCalculator;
 
     @SuppressWarnings("null")
 public FinancialOverviewTotals calculate(UUID familyGroupId, YearMonth month) {
         List<Receivable> expectedReceivables = dataRepository.findExpectedReceivables(familyGroupId, month);
         List<ReceivableConfirmation> confirmations = dataRepository.findReceivedReceivables(familyGroupId, month);
-        List<Expense> expenses = dataRepository.findActiveExpenses(familyGroupId, month);
         List<PayableBill> expectedBills = dataRepository.findExpectedBills(familyGroupId, month);
         List<PayableBillPayment> billPayments = dataRepository.findPaidBillPayments(familyGroupId, month);
         List<CreditCardInvoice> invoices = dataRepository.findInvoicesDue(familyGroupId, month);
         List<CreditCardPayment> cardPayments = dataRepository.findCardPayments(familyGroupId, month);
-        List<CreditCardInstallment> installments = dataRepository.findInstallmentsDue(familyGroupId, month);
-        List<CreditCardRefund> refunds = dataRepository.findRefunds(familyGroupId, month);
-
         BigDecimal realizedIncome = sum(confirmations.stream().map(ReceivableConfirmation::getAmount).toList());
         BigDecimal plannedIncome = sum(expectedReceivables.stream().map(Receivable::getExpectedAmount).toList());
 
@@ -45,19 +42,13 @@ public FinancialOverviewTotals calculate(UUID familyGroupId, YearMonth month) {
                 .toList()));
 
         BigDecimal incomeConsidered = realizedIncome.add(plannedIncome);
-        BigDecimal expensesConsidered = sum(expenses.stream()
-                .filter(expense -> expense.getPaymentMethod() != ExpensePaymentMethod.CARTAO_CREDITO)
-                .map(Expense::getAmount)
+        BigDecimal expensesConsidered = sum(consumptionCalculator.findConsumptionItems(
+                        familyGroupId, month.atDay(1), month.atEndOfMonth())
+                .stream()
+                .map(FinancialConsumptionItem::amount)
                 .toList());
-        expensesConsidered = expensesConsidered.add(sum(installments.stream()
-                .map(installment -> installment.getAmount()
-                        .subtract(installment.getRefundedAmount()).max(ZERO))
-                .toList()));
         expensesConsidered = expensesConsidered.add(sum(expectedBills.stream()
                 .map(PayableBill::getAmount)
-                .toList()));
-        expensesConsidered = expensesConsidered.subtract(sum(refunds.stream()
-                .map(CreditCardRefund::getAmount)
                 .toList()));
 
         return new FinancialOverviewTotals(

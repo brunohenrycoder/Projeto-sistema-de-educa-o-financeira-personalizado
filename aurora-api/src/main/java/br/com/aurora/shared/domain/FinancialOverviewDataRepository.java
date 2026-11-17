@@ -4,7 +4,9 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +47,10 @@ public class FinancialOverviewDataRepository {
     }
 
     public List<Expense> findActiveExpenses(UUID familyGroupId, YearMonth month) {
+        return findActiveExpenses(familyGroupId, month.atDay(1), month.atEndOfMonth());
+    }
+
+    public List<Expense> findActiveExpenses(UUID familyGroupId, LocalDate startDate, LocalDate endDate) {
         return entityManager.createQuery("""
                         select e from Expense e
                         where e.familyGroup.id = :familyGroupId
@@ -53,8 +59,8 @@ public class FinancialOverviewDataRepository {
                         """, Expense.class)
                 .setParameter("familyGroupId", familyGroupId)
                 .setParameter("status", ExpenseStatus.ATIVO)
-                .setParameter("startDate", month.atDay(1))
-                .setParameter("endDate", month.atEndOfMonth())
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
                 .getResultList();
     }
 
@@ -135,6 +141,14 @@ public class FinancialOverviewDataRepository {
     }
 
     public List<CreditCardInstallment> findInstallmentsDue(UUID familyGroupId, YearMonth month) {
+        return findInstallmentsDue(familyGroupId, month.atDay(1), month.atEndOfMonth());
+    }
+
+    public List<CreditCardInstallment> findInstallmentsDue(
+            UUID familyGroupId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
         return entityManager.createQuery("""
                         select i from CreditCardInstallment i
                         join fetch i.invoice invoice
@@ -145,26 +159,30 @@ public class FinancialOverviewDataRepository {
                           and expense.status = :expenseStatus
                         """, CreditCardInstallment.class)
                 .setParameter("familyGroupId", familyGroupId)
-                .setParameter("startDate", month.atDay(1))
-                .setParameter("endDate", month.atEndOfMonth())
+                        .setParameter("startDate", startDate)
+                        .setParameter("endDate", endDate)
                 .setParameter("expenseStatus", ExpenseStatus.ATIVO)
                 .getResultList();
     }
 
     public List<CreditCardRefund> findRefunds(UUID familyGroupId, YearMonth month) {
-        LocalDateTime start = month.atDay(1).atStartOfDay();
-        LocalDateTime endExclusive = month.plusMonths(1).atDay(1).atStartOfDay();
+        return findRefunds(familyGroupId, month.atDay(1), month.atEndOfMonth());
+    }
+
+    public List<CreditCardRefund> findRefunds(UUID familyGroupId, LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX);
         return entityManager.createQuery("""
                         select r from CreditCardRefund r
                         join fetch r.expense e
                         where e.familyGroup.id = :familyGroupId
                           and e.status = :expenseStatus
-                          and r.createdAt >= :start and r.createdAt < :endExclusive
+                          and r.createdAt between :start and :end
                         """, CreditCardRefund.class)
                 .setParameter("familyGroupId", familyGroupId)
                 .setParameter("expenseStatus", ExpenseStatus.ATIVO)
                 .setParameter("start", start)
-                .setParameter("endExclusive", endExclusive)
+                .setParameter("end", end)
                 .getResultList();
     }
 }
