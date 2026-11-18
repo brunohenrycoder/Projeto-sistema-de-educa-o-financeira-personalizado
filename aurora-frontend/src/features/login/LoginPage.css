@@ -1,0 +1,69 @@
+.login {
+  display: grid;
+  place-items: start center;
+  padding-block: var(--space-6);
+}
+
+.login__form {
+  width: 100%;
+  max-width: 28rem;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-md);
+}
+
+.login__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.login__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.login__field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.login__field label {
+  font-size: var(--font-size-sm);
+}
+
+.login__field input {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  background: Canvas;
+  color: CanvasText;
+}
+
+.login__notice,
+.login__error,
+.login__api-errors {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.login__api-errors ul {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+.login__button {
+  padding: var(--space-3);
+  border: 1px solid ButtonText;
+  border-radius: var(--radius-sm);
+  background: ButtonFace;
+  color: ButtonText;
+  cursor: pointer;
+}
+
+.login__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

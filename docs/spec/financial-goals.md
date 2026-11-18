@@ -19,12 +19,16 @@ Especificar a geração de sugestões de metas de economia e a confirmação pel
 - A sobra média não deve ser convertida automaticamente em valor-alvo da meta.
 - Se a sobra média for igual ou inferior a zero, o sistema não deve apresentar uma sugestão automática baseada nesse cálculo.
 
-### GOAL-02 — Decisão do usuário
+### GOAL-02 — Decisão do usuário e ações sobre a sugestão
 
-- O Principal informa o valor-alvo que deseja estabelecer para a meta.
-- O sistema valida o valor-alvo e solicita confirmação explícita do Principal.
-- A meta somente deve ser criada após confirmação explícita do Principal.
-- O sistema não pode criar metas automaticamente sem consentimento.
+O Principal decide se deseja criar uma meta e com qual valor. O sistema estabelece distinção clara entre quatro ações:
+
+1. **Aceitar a sugestão:** O Principal utiliza o valor de sobra média retornado pela consulta e o submete como `targetAmount` na confirmação.
+2. **Ajustar o valor sugerido:** O Principal altera o valor sugerido para qualquer valor positivo desejado e o submete como `targetAmount` na confirmação.
+3. **Recusar ou dispensar a sugestão:** A API do Aurora não possui suporte, endpoint, campo ou tabela para persistir a recusa de uma sugestão. A interface do frontend pode permitir que o usuário dispense ou feche visualmente o card de sugestão, mas essa ação é puramente de exibição em tela (estado transitório da UI) e **não equivale a uma recusa registrada ou persistida no backend**. Fica registrada a limitação funcional atual e a pendência de decisão pelo responsável pelo projeto sobre a eventual criação de um fluxo de recusa persistida no futuro.
+4. **Confirmar uma meta:** A meta é efetivamente criada e persistida apenas quando o Principal submete a requisição explícita de confirmação (`POST /api/financial-goals/confirm`).
+
+O sistema não pode criar metas automaticamente sem confirmação explícita.
 
 ### GOAL-03 — Administração da meta
 
@@ -48,6 +52,7 @@ Especificar a geração de sugestões de metas de economia e a confirmação pel
 - **RN-GOAL-12:** a geração ou apresentação de uma sugestão não representa autorização para criar uma meta. A criação depende sempre da confirmação explícita do Principal.
 - **RN-GOAL-13:** a sobra média nunca deve ser usada automaticamente como valor-alvo nem receber percentual ou multiplicador arbitrário.
 - **RN-GOAL-14:** para o cálculo de sobra, despesas de cartão são consideradas pelo pagamento efetivo da fatura no mês do pagamento. Parcelas não devem ser somadas separadamente.
+- **RN-GOAL-15:** a recusa de sugestões não é persistida pela API do backend. Eventual botão de dispensar/descartar na interface do frontend opera exclusivamente em nível de estado local da tela e não equivale a uma recusa registrada no banco de dados.
 
 ## 5. Fluxos principais
 
@@ -91,14 +96,45 @@ Especificar a geração de sugestões de metas de economia e a confirmação pel
 - Receitas são apuradas pela data de recebimento; despesas diretas, pagamentos de contas e pagamentos de faturas são apurados pela data efetiva do pagamento.
 - Faturas pendentes não são saídas realizadas. Estornos somente afetam a sobra conforme seu efeito no fluxo de caixa, por exemplo, reduzindo pagamentos efetivamente realizados.
 - A implementação não deve duplicar as regras de cálculo financeiro já existentes no FINANCIAL OVERVIEW.
-- A arquitetura deve respeitar a organização VSA, sem chamadas diretas a services de outras slices. A reutilização deve ocorrer por componentes compartilhados de domínio quando apropriado.
 - A sobra média é apenas informativa. Não existe conversão automática para valor-alvo; o Principal define e confirma o valor da meta.
 - Consultar a referência de sobra não cria uma meta. A criação ocorre apenas pela operação explícita de confirmação.
 - O escopo implementado permite consultar metas e seus valores confirmados; prazos e métricas de progresso não são definidos por esta especificação.
+- **Relação com RF-017:** Este módulo não consome as variações de categorias do `REPORTS-ANALYTICS` para gerar conselhos nem cria recomendações textuais personalizadas. O frontend não deve simular tais comportamentos.
+- **Limitação de recusa:** A ausência de endpoint de recusa no backend é uma limitação documental conhecida desta versão acadêmica. Qualquer decisão de auditoria ou histórico de descarte dependerá de decisão futura do responsável pelo produto.
 
-## 8. API implementada
+## 8. API implementada e contratos para o frontend
 
-- `GET /api/financial-goals/savings-suggestion` — retorna `averageMonthlySurplus` quando a média dos três meses anteriores for positiva; retorna `204 No Content` quando for igual ou inferior a zero.
-- `POST /api/financial-goals/confirm` — confirma e cria uma meta com `targetAmount` informado pelo Principal. O valor deve ser positivo, ter no máximo duas casas decimais e até dez dígitos inteiros.
-- `GET /api/financial-goals` — lista as metas e os valores confirmados do grupo familiar do Principal autenticado.
-- As três operações são exclusivas do Principal. O grupo familiar é obtido a partir da identidade autenticada; a API não aceita `familyGroupId`.
+Todas as operações são exclusivas do Principal autenticado via JWT:
+
+- `GET /api/financial-goals/savings-suggestion` — Retorna a sugestão de economia baseada na sobra média dos três meses anteriores.
+  - **Sucesso com sobra positiva (200 OK):**
+    ```json
+    {
+      "averageMonthlySurplus": 450.00
+    }
+    ```
+  - **Média não positiva ou ausência de dados (204 No Content):** Quando a sobra média for menor ou igual a zero, ou não houver movimentações financeiras nos meses anteriores, a API responde HTTP `204 No Content` (sem corpo). O frontend deve tratar esse status ocultando a área de sugestão automática ou informando que não há sugestão de economia calculável no momento.
+
+- `POST /api/financial-goals/confirm` — Confirma e cria uma meta com o valor-alvo informado pelo Principal.
+  - **Payload:**
+    ```json
+    {
+      "targetAmount": 450.00
+    }
+    ```
+  - **Validações:** `targetAmount` é obrigatório, deve ser positivo (`> 0`), com até duas casas decimais e até 10 dígitos inteiros.
+  - **Resposta (201 Created):**
+    ```json
+    {
+      "id": "uuid...",
+      "targetAmount": 450.00,
+      "createdAt": "2026-11-18T10:00:00"
+    }
+    ```
+  - Utilizado tanto para **aceitar** (repassando o valor sugerido) quanto para **ajustar** (informando novo valor-alvo).
+
+- `GET /api/financial-goals` — Lista as metas financeiras confirmadas do grupo familiar.
+  - **Resposta (200 OK):** Lista de metas confirmadas `[{ "id": "uuid...", "targetAmount": 450.00, "createdAt": "..." }]`.
+  - **Estado vazio:** Quando não houver metas criadas, retorna lista vazia `[]`.
+
+- **Operação de recusa/descarte:** Não existe endpoint `POST /api/financial-goals/reject` ou equivalente. Se a interface gráfica fornecer um botão para dispensar a exibição da sugestão, o frontend deve apenas ocultar visualmente o componente no estado local da aplicação, tendo ciência de que nenhuma informação é enviada ao servidor.

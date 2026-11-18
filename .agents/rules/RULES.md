@@ -131,6 +131,9 @@ Use o formato de erro definido em `docs/spec/README.md` (campos `status`, `erro`
 | 401    | Não autenticado                                 |
 | 403    | Autenticado sem permissão                       |
 | 404    | Registro inexistente ou de outro grupo familiar |
+| 429    | Bloqueio temporário por excesso de tentativas de login |
+| 409    | Conflito de dados (por exemplo, e-mail já cadastrado) |
+| 503    | Serviço temporariamente indisponível (por exemplo, falha no envio de e-mail) |
 
 ## 10. Testes
 

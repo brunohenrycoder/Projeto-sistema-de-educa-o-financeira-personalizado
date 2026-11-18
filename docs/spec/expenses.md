@@ -78,13 +78,47 @@ O usuário responsável pelo lançamento deve ser identificado pelo servidor a p
 - [ ] Despesas no crédito são incluídas na fatura em aberto.
 - [ ] O Dependente não recebe totais ou análises familiares.
 
-## 7. Endpoints e estado atual do backend
+## 7. Endpoints da API e contratos para o frontend
 
-- `POST /api/expenses` — registra uma despesa.
-- `GET /api/expenses` — lista despesas com filtros opcionais por período, categoria e integrante.
-- `PUT /api/expenses/{expenseId}` — altera uma despesa permitida ao perfil autenticado.
-- `DELETE /api/expenses/{expenseId}` — cancela logicamente a despesa, preservando o histórico.
+Todos os endpoints exigem autenticação JWT:
 
-No registro com `CARTAO_CREDITO`, `installmentCount` é opcional (padrão 1; de 2 a 36 para parcelamento). O backend identifica o cartão ativo e as faturas automaticamente; o cliente não envia identificadores de cartão ou fatura. A criação da despesa, das parcelas e dos vínculos com as faturas é transacional.
+- `POST /api/expenses` — Registra uma nova despesa (gasto).
+  - **Disponível para:** Principal e Dependente.
+  - **Payload:**
+    ```json
+    {
+      "amount": 42.50,
+      "expenseDate": "2026-11-18",
+      "category": "TRANSPORTE",
+      "paymentMethod": "CARTAO_CREDITO",
+      "description": "Corrida de Uber",
+      "installmentCount": 1
+    }
+    ```
+  - `amount` deve ser maior que zero; `expenseDate`, `category` e `paymentMethod` são obrigatórios.
+  - O usuário responsável é atribuído automaticamente pelo backend a partir do token JWT. O payload não aceita identificador de usuário.
+  - Se `paymentMethod` for `CARTAO_CREDITO`, `installmentCount` pode variar de 1 a 36 (padrão 1). O backend identifica o cartão ativo e associa a fatura aberta automaticamente; o cliente não informa identificadores de cartão ou fatura.
+  - **Resposta (201 Created):** Retorna os dados da despesa cadastrada. Para o Dependente, retorna apenas a confirmação do lançamento, sem dados de saldo ou limite.
 
-Despesas no crédito vinculadas a faturas fechadas, parcialmente pagas, pagas ou atrasadas não podem ser editadas ou canceladas diretamente. Em faturas abertas, a edição financeira recalcula as parcelas; o cancelamento é lógico e preserva os registros das parcelas.
+- `GET /api/expenses` — Lista despesas registradas.
+  - **Filtros opcionais (Query):** `startDate` e `endDate` (formato `AAAA-MM-DD`), `category`, `memberId` (UUID).
+  - **Comportamento por perfil:**
+    - **Principal:** visualiza os lançamentos de todos os integrantes do grupo familiar. Pode filtrar por qualquer membro do grupo.
+    - **Dependente:** visualiza **exclusivamente os próprios gastos** (RN-01, RN-02). Se informar `memberId` diferente do seu próprio ID, recebe HTTP 403 Forbidden.
+    - **Resposta (200 OK):** Lista de itens de despesa `[{ "id": "uuid...", "familyGroupId": "...", "userId": "...", "userName": "...", "amount": 42.50, "expenseDate": "2026-11-18", "category": "TRANSPORTE", "paymentMethod": "CARTAO_CREDITO", "description": "Uber", ... }]`.
+    - **Privacidade do Dependente:** O endpoint retorna estritamente a lista de despesas individuais, sem somatórios, totais agregados, médias ou saldos familiares.
+
+- `PUT /api/expenses/{expenseId}` — Altera os dados de uma despesa.
+  - **Payload:** `amount`, `expenseDate`, `category`, `paymentMethod`, `description`, `installmentCount`.
+  - **Permissões:**
+    - Principal pode alterar despesas do grupo familiar.
+    - Dependente pode alterar **somente despesas que ele próprio cadastrou**. Tentativa de alterar gasto de outro membro retorna HTTP 403 Forbidden.
+  - **Trava de faturas:** Despesas no cartão vinculadas a faturas fechadas, parcialmente pagas, pagas ou atrasadas não podem ser editadas diretamente (retorna HTTP 400). Apenas despesas vinculadas a faturas no estado `OPEN` podem ser alteradas.
+
+- `DELETE /api/expenses/{expenseId}` — Exclusão lógica de uma despesa.
+  - **Permissões:**
+    - Principal pode excluir despesas do grupo familiar.
+    - Dependente pode excluir **somente despesas cadastradas por ele**. Tentativa de excluir gasto de outro membro retorna HTTP 403 Forbidden.
+  - **Comportamento:** A exclusão é lógica (altera status para `CANCELADO`), preservando o histórico, o autor e a data de exclusão.
+  - **Trava de faturas:** Despesas no cartão vinculadas a faturas não abertas não podem ser canceladas diretamente. Em faturas abertas, o cancelamento abate as parcelas no ledger do cartão.
+  - **Resposta (204 No Content).**

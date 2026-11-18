@@ -89,3 +89,69 @@ O link usa um fragmento (`#token=...`) para não enviar o token em requisições
 - A matriz de permissões por perfil está em `family-management.md` e nos módulos correspondentes.
 - A política de bloqueio é de cinco falhas consecutivas por e-mail, com duração de 15 minutos.
 - O bloqueio por e-mail aplica-se mesmo quando as tentativas vêm de IPs diferentes. Isso não limita password spraying distribuído entre e-mails diferentes; um limite adicional por IP ou global requer uma política própria e não faz parte deste requisito.
+
+## 8. Endpoints da API e contratos para o frontend
+
+Os endpoints aceitam os prefixos `/api/auth` e `/auth`:
+
+- `POST /api/auth/register` — Cadastra o usuário Principal e cria automaticamente seu grupo familiar.
+  - **Payload:**
+    ```json
+    {
+      "name": "Maria Silva",
+      "email": "maria@example.com",
+      "password": "SenhaSegura123",
+      "passwordConfirmation": "SenhaSegura123"
+    }
+    ```
+  - **Validações:** `name` mínimo 3 caracteres; `email` válido e único; `password` mínimo 8 caracteres; `passwordConfirmation` idêntica à senha.
+  - **Resposta (201 Created):**
+    ```json
+    {
+      "userId": "uuid...",
+      "familyGroupId": "uuid...",
+      "name": "Maria Silva",
+      "email": "maria@example.com",
+      "role": "PRINCIPAL",
+      "status": "ATIVO",
+      "createdAt": "2026-11-18T10:00:00"
+    }
+    ```
+  - **Disparo de e-mail de confirmação:** O backend gera um token criptográfico (armazenado em hash no banco com validade de 24 horas) e envia por e-mail um link no formato `<email-confirmation-url>#token=<rawToken>`. O token bruto **nunca** é retornado no corpo da resposta HTTP por segurança.
+  - **Erros específicos do cadastro:**
+    - `409 Conflict` — e-mail já cadastrado ou violação de integridade. Campo `erro`: `Conflito de dados` (e-mail duplicado) ou `Conflito de integridade` (violação de integridade). Mensagens possíveis: `Já existe um usuário cadastrado com este e-mail.` (e-mail duplicado) ou `Já existe um registro com os dados informados.` (violação de integridade).
+    - `503 Service Unavailable` — falha no envio do e-mail de confirmação. Campo `erro`: `Serviço de e-mail indisponível`. Mensagem: `Não foi possível enviar o e-mail de confirmação. Tente novamente mais tarde.`
+
+- `POST /api/auth/confirm-email` — Confirmação do e-mail a partir do link recebido.
+  - **Fluxo no frontend:** A página de confirmação no React lê o fragmento `#token=<rawToken>` da URL e dispara:
+  - **Payload:**
+    ```json
+    {
+      "token": "raw-token-extraido-da-url"
+    }
+    ```
+  - **Resposta (204 No Content):** E-mail confirmado com sucesso. A conta fica apta para efetuar login.
+  - Links inválidos, expirados (>24h) ou já utilizados retornam HTTP 400.
+
+- `POST /api/auth/login` — Autenticação de usuários (Principal e Dependente).
+  - **Payload:** `{"email": "...", "password": "..."}`.
+  - **Resposta (200 OK):**
+    ```json
+    {
+      "accessToken": "eyJhbGciOi...",
+      "tokenType": "Bearer",
+      "expiresIn": 86400,
+      "userId": "uuid...",
+      "familyGroupId": "uuid...",
+      "name": "Maria Silva",
+      "email": "maria@example.com",
+      "role": "PRINCIPAL"
+    }
+    ```
+    - `expiresIn` é o tempo de validade do token em segundos.
+  - **Falha de autenticação:** credenciais inválidas, usuário inativo, removido ou com e-mail não confirmado retornam HTTP 401 com mensagem genérica (`E-mail ou senha inválidos.`), sem informar se o e-mail está cadastrado.
+  - **Bloqueio por tentativas inválidas:** Na 5ª tentativa incorreta consecutiva para o mesmo e-mail, o identificador é bloqueado por 15 minutos e a API retorna HTTP 429 indicando o bloqueio temporal e informando quando será possível tentar novamente.
+
+- `POST /api/auth/logout` — Encerramento de sessão e revogação do token.
+  - **Header:** `Authorization: Bearer <jwt>`.
+  - **Resposta (204 No Content):** Revoga o token da sessão no servidor (blacklist/controle de sessão), impedindo sua reutilização mesmo antes da expiração natural do JWT.

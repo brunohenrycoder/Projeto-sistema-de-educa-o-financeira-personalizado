@@ -28,15 +28,17 @@ obrigatória no cadastro. `SEM_RECORRENCIA` cria uma única ocorrência;
 - O sistema deve manter histórico das contas.
 - O cancelamento não deve apagar o registro.
 
-### PAY-03 — Registrar pagamento
+### PAY-03 — Registrar pagamento e integração financeira
 - O Principal pode marcar uma conta como paga.
 - Deve informar a data do pagamento e o método de pagamento.
-- O método de pagamento é obrigatório no momento da quitação.
-- O valor efetivamente pago é opcional; quando informado, deve ser igual
-  ao valor integral da conta. Pagamentos parciais não são permitidos.
-- Uma conta quitada gera uma despesa correspondente em EXPENSES.
-- Para `CARTAO_CREDITO`, a despesa é associada ao cartão e à fatura pelo
-  ledger existente de CREDIT CARDS.
+- O método de pagamento é obrigatório no momento da quitação (`DINHEIRO`, `PIX`, `DEBITO`, `CARTAO_CREDITO`, etc.).
+- O valor efetivamente pago é opcional; quando informado, deve ser exatamente igual ao valor integral da conta. Pagamentos parciais não são permitidos em contas a pagar.
+- Uma conta quitada gera exatamente uma despesa correspondente em `EXPENSES` na mesma transação.
+- **Integração com CREDIT CARDS:** Quando o método for `CARTAO_CREDITO`, a despesa gerada é registrada como uma compra à vista (1 parcela) no cartão de crédito ativo por meio do `CreditCardLedger`, passando a integrar a fatura aberta do cartão.
+- **Fluxo de Caixa (FINANCIAL OVERVIEW):**
+  - Quitações com métodos à vista/diretos (`DINHEIRO`, `PIX`, `DEBITO`, etc.) são contabilizadas imediatamente como saídas realizadas na data do pagamento.
+  - Quitações com `CARTAO_CREDITO` não geram saída imediata no fluxo de caixa no momento da baixa da conta; a saída efetiva de caixa ocorrerá somente quando a fatura do cartão for paga em `CREDIT CARDS`.
+  - A quitação posterior da fatura não gera nova conta a pagar nem duplica a despesa de consumo.
 
 ### PAY-04 — Recorrência mensal
 - Para uma conta com recorrência mensal, ao quitar a ocorrência atual o sistema deve criar a próxima ocorrência.
@@ -113,17 +115,64 @@ obrigatória no cadastro. `SEM_RECORRENCIA` cria uma única ocorrência;
    mesmo antes da persistência pela rotina automática.
 5. A rotina automática é executada diariamente e só seleciona contas `PENDENTE`.
 
-## 6. Endpoints
-- `POST /api/payable-bills` — cadastra conta.
-- `GET /api/payable-bills` — lista as contas do grupo familiar.
-- `PUT /api/payable-bills/{billId}` — atualiza uma ocorrência não paga nem cancelada.
-- `PUT /api/payable-bills/{billId}/recurrence` — atualiza a configuração de série mensal e as ocorrências futuras elegíveis.
-- `POST /api/payable-bills/{billId}/cancel` — cancela uma ocorrência conforme o escopo informado.
-- `POST /api/payable-bills/{billId}/payments` — registra quitação e despesa correspondente.
-- `GET /api/payable-bills/{billId}/payments` — consulta o histórico de pagamentos.
+## 6. Endpoints da API e contratos para o frontend
 
-Todos os endpoints exigem autenticação e perfil Principal. IDs são
-sempre consultados dentro do grupo familiar autenticado.
+Todos os endpoints exigem autenticação JWT e perfil Principal. As consultas filtram automaticamente pelo grupo familiar autenticado.
+
+- `POST /api/payable-bills` — Cadastra uma nova conta a pagar.
+  - **Payload:**
+    ```json
+    {
+      "description": "Aluguel",
+      "amount": 1500.00,
+      "dueDate": "2026-11-20",
+      "category": "MORADIA",
+      "recurrence": "MENSAL"
+    }
+    ```
+  - Categorias válidas: `MORADIA`, `ALIMENTACAO`, `TRANSPORTE`, `SAUDE`, `EDUCACAO`, `LAZER`, `CONTAS_CONSUMO`, `ASSINATURAS`, `IMPOSTOS`, `OUTROS`.
+  - Recorrências válidas: `SEM_RECORRENCIA`, `MENSAL`.
+  - **Resposta (201 Created):** Retorna a conta criada com `id`, `seriesId`, `description`, `amount`, `dueDate`, `category`, `recurrence`, `status` (`PENDENTE` ou `ATRASADA`), `occurrenceNumber`.
+
+- `GET /api/payable-bills` — Lista as contas a pagar do grupo familiar.
+  - **Resposta (200 OK):** Lista de contas ordenadas por data de vencimento. As contas vencidas que ainda estão como `PENDENTE` no banco são exibidas virtualmente como `ATRASADA` na consulta.
+
+- `PUT /api/payable-bills/{billId}` — Atualiza os dados de uma ocorrência individual não paga e não cancelada.
+  - **Payload:** `description`, `amount`, `dueDate`, `category`.
+  - **Escopo:** Altera exclusivamente a ocorrência indicada.
+
+- `PUT /api/payable-bills/{billId}/recurrence` — Atualiza a configuração da série mensal recorrente.
+  - **Payload:** `description`, `amount`, `category`, `nextDueDate`.
+  - **Escopo:** Atualiza os parâmetros da série e propaga as alterações para todas as ocorrências futuras elegíveis (ainda não pagas e não canceladas). Ocorrências já quitadas ou canceladas não são modificadas.
+
+- `POST /api/payable-bills/{billId}/cancel` — Cancela conta(s) a pagar conforme o escopo.
+  - **Payload:**
+    ```json
+    {
+      "scope": "SOMENTE_OCORRENCIA"
+    }
+    ```
+    ou `"scope": "OCORRENCIA_E_FUTURAS"`.
+  - **Escopos:**
+    - `SOMENTE_OCORRENCIA`: Cancela apenas a ocorrência indicada (status `CANCELADA`), mantendo a série ativa. Para assegurar a continuidade da série mensal, a próxima ocorrência é gerada.
+    - `OCORRENCIA_E_FUTURAS`: Cancela a ocorrência selecionada e todas as futuras ainda não quitadas, encerrando a série mensal (novas ocorrências não serão geradas).
+  - Contas já pagas não podem ser canceladas.
+
+- `POST /api/payable-bills/{billId}/payments` — Registra a quitação integral da conta.
+  - **Payload:**
+    ```json
+    {
+      "paymentDate": "2026-11-18",
+      "paymentMethod": "PIX",
+      "amount": 1500.00
+    }
+    ```
+  - `paymentDate` e `paymentMethod` são obrigatórios.
+  - `amount` é opcional; se enviado, deve corresponder exatamente ao valor total da conta. Pagamentos parciais são rejeitados (400 Bad Request).
+  - Gera automaticamente uma despesa em `EXPENSES` e vincula o pagamento. Se o método for `CARTAO_CREDITO`, registra no `CreditCardLedger` (1 parcela na fatura aberta).
+  - Se a conta for de recorrência `MENSAL`, gera automaticamente a próxima ocorrência mensal.
+
+- `GET /api/payable-bills/{billId}/payments` — Consulta o histórico de pagamentos da conta.
 
 ## 7. Critérios de aceitação
 - [ ] Apenas o Principal acessa o módulo.

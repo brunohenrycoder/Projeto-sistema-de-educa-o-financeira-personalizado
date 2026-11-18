@@ -196,17 +196,76 @@ Cada recebimento deverá possuir um dos seguintes status:
 - [ ] Recebimentos confirmados são considerados nas visões financeiras sem duplicidade.
 - [ ] O sistema impede acesso a recebimentos de outros grupos familiares.
 
-## 7. API implementada
+## 7. API implementada e contratos para o frontend
 
-Os endpoints aceitam os prefixos `/api/receivables` e `/receivables` e exigem autenticação do Principal:
+Os endpoints aceitam os prefixos `/api/receivables` e `/receivables`, exigem autenticação JWT e perfil Principal. As operações filtram automaticamente pelo grupo familiar autenticado:
 
-- `POST /` — cadastrar recebimento esperado;
-- `GET /` — listar recebimentos e status;
-- `POST /{receivableId}/confirm` — confirmar o recebimento integral;
-- `PUT /{receivableId}` — alterar uma ocorrência;
-- `PUT /{receivableId}/recurrence` — alterar a recorrência mensal e suas ocorrências futuras abertas;
-- `POST /{receivableId}/cancel` — cancelar a ocorrência ou encerrar a recorrência;
-- `GET /{receivableId}/history` — consultar alterações e confirmação.
+- `POST /api/receivables` — Cadastra um novo recebimento esperado.
+  - **Payload:**
+    ```json
+    {
+      "description": "Salário",
+      "expectedAmount": 5000.00,
+      "expectedDate": "2026-11-05",
+      "recurrence": "MENSAL"
+    }
+    ```
+  - Recorrências permitidas: `SEM_RECORRENCIA` (ocorrência única) e `MENSAL`.
+  - **Resposta (201 Created):** Retorna o recebimento criado com `id`, `seriesId`, `description`, `expectedAmount`, `expectedDate`, `recurrence`, `status` (`PENDENTE` ou `ATRASADA`), `occurrenceNumber`.
+
+- `GET /api/receivables` — Lista todos os recebimentos do grupo familiar.
+  - **Resposta (200 OK):** Lista de recebimentos com status e datas. Se a data prevista estiver no passado e o recebimento continuar pendente, é retornado com status `ATRASADA`.
+
+- `PUT /api/receivables/{receivableId}` — Atualiza os dados de uma ocorrência individual pendente ou atrasada.
+  - **Payload:**
+    ```json
+    {
+      "description": "Salário com bônus",
+      "expectedAmount": 5500.00,
+      "expectedDate": "2026-11-06"
+    }
+    ```
+  - **Escopo:** Altera exclusivamente a ocorrência indicada.
+
+- `PUT /api/receivables/{receivableId}/recurrence` — Atualiza a configuração da recorrência mensal e ocorrências futuras elegíveis.
+  - **Payload:**
+    ```json
+    {
+      "description": "Salário Atualizado",
+      "expectedAmount": 5500.00,
+      "nextExpectedDate": "2026-12-05",
+      "recurrenceDay": 5
+    }
+    ```
+  - **Escopo:** Atualiza os parâmetros da série mensal e propaga para ocorrências futuras em aberto (não recebidas e não canceladas). Ocorrências já recebidas ou canceladas não são alteradas.
+
+- `POST /api/receivables/{receivableId}/cancel` — Cancela o recebimento conforme o escopo informado.
+  - **Payload:**
+    ```json
+    {
+      "scope": "SOMENTE_OCORRENCIA"
+    }
+    ```
+    ou `"scope": "OCORRENCIA_E_FUTURAS"`.
+  - **Escopos:**
+    - `SOMENTE_OCORRENCIA`: Cancela apenas a ocorrência indicada (status `CANCELADA`). A série mensal continua ativa e a próxima ocorrência é gerada para dar continuidade à série.
+    - `OCORRENCIA_E_FUTURAS`: Cancela a ocorrência indicada e todas as futuras ainda não confirmadas, encerrando a série mensal (nenhuma nova ocorrência será criada).
+  - Recebimentos com status `RECEBIDA` não podem ser cancelados.
+
+- `POST /api/receivables/{receivableId}/confirm` — Confirma o recebimento integral do valor.
+  - **Payload:**
+    ```json
+    {
+      "receivedDate": "2026-11-05",
+      "receivedAmount": 5000.00
+    }
+    ```
+  - `receivedDate` é obrigatório.
+  - `receivedAmount` é opcional; se informado, deve corresponder exatamente ao valor esperado. Não são permitidos recebimentos parciais ou superiores.
+  - Atualiza o status para `RECEBIDA`.
+  - Se a recorrência for `MENSAL`, gera automaticamente a próxima ocorrência da série.
+
+- `GET /api/receivables/{receivableId}/history` — Consulta o histórico de alterações de status e confirmação do recebimento.
 
 ## 8. Integração financeira
 

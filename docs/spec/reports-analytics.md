@@ -29,13 +29,14 @@ Permitir que o Principal visualize relatórios e padrões de consumo da família
 - Quando houver três ou mais meses disponíveis, deve utilizar a média dos três meses imediatamente anteriores.
 - Categorias empatadas na última posição do ranking devem ser apresentadas, mesmo que isso resulte em mais de três categorias.
 
-### REP-03 — Variação de categoria
+### REP-03 — Variação de categoria (dados quantitativos de apoio ao RF-017)
 
 - O sistema deve identificar aumento superior a 20% em uma categoria em relação à média histórica utilizada.
 - O percentual de variação deve ser calculado com base no valor do período atual e na média histórica.
-- Quando a média histórica for igual a zero, o sistema não deve realizar divisão por zero nem gerar variação percentual.
-- A identificação da variação pode subsidiar sugestões financeiras.
-- A criação e o gerenciamento de sugestões são responsabilidades da funcionalidade `FINANCIAL GOALS`.
+- Quando a média histórica for igual a zero, o sistema não deve realizar divisão por zero nem gerar variação percentual (retorna nulo).
+- A identificação da variação disponibiliza dados numéricos para análise de consumo.
+- A API não gera recomendações ou textos de sugestão personalizada; o escopo limita-se ao fornecimento dos dados quantitativos de variação.
+- A geração de recomendações textuais personalizadas (RF-017) permanece sem contrato funcional definido no backend e não deve ser simulada pelo frontend.
 
 ## 4. Regras de negócio
 
@@ -123,12 +124,13 @@ Nesse caso, a categoria apresenta aumento superior a 20%.
 
 Quando a média histórica for igual a zero, o sistema não deve calcular percentual nem classificar a categoria como aumento superior a 20%.
 
-### 5.4. Integração com FINANCIAL GOALS
+### 5.4. Relação com sugestões personalizadas (RF-017) e FINANCIAL GOALS
 
-- `REPORTS-ANALYTICS` identifica categorias com aumento superior a 20% e disponibiliza os dados da análise.
-- `FINANCIAL GOALS` é responsável por utilizar essas informações para elaborar sugestões financeiras e metas de economia.
-- Não devem ser duplicadas regras de geração de sugestões em `REPORTS-ANALYTICS`.
-- A integração deve respeitar os limites arquiteturais definidos para o projeto.
+- `REPORTS-ANALYTICS` identifica categorias com aumento superior a 20% em relação à média histórica e disponibiliza exclusivamente os dados estruturados da análise (valor atual, média histórica, percentual de variação).
+- Não há geração automática de recomendações textuais personalizadas na API. A análise quantitativa de variação de categorias não equivale a sugestões textuais personalizadas (RF-017).
+- A geração de recomendações personalizadas permanece sem contrato funcional definido no backend e não deve ser simulada nem criada pelo frontend.
+- `FINANCIAL GOALS` limita-se à sugestão de meta de economia baseada na sobra média mensal realizada (fluxo de caixa), sem gerar recomendações a partir de categorias.
+- A interface do frontend deve representar fielmente os dados numéricos fornecidos pela API, sem introduzir conselhos financeiros inventados.
 
 ## 6. Fluxos principais
 
@@ -181,27 +183,74 @@ Quando a média histórica for igual a zero, o sistema não deve calcular percen
 - [ ] A identificação de variações não cria sugestões diretamente.
 - [ ] Dependentes não conseguem acessar relatórios ou análises familiares, inclusive diretamente pela API.
 
-## 8. Observações de implementação
+## 8. Observações de implementação e integração com o frontend
 
-- A implementação deve seguir a arquitetura VSA e as decisões documentadas nos ADRs.
-- A funcionalidade deve reutilizar os dados das features `EXPENSES`, `CREDIT CARDS` e `FINANCIAL OVERVIEW`.
+- A implementação do backend segue a arquitetura VSA e as decisões documentadas nos ADRs.
+- O módulo terá interface no frontend React, além da implementação já concluída e funcional no backend.
+- A interface no frontend React deve representar com precisão os dados efetivamente fornecidos pela API, sem inventar novos indicadores, cálculos, recomendações ou regras de análise.
+- O acesso aos relatórios e análises no frontend e no backend é restrito ao Principal (RN-01, RN-04, RN-REP-01, RN-REP-18). O Dependente não acessa esta tela nem os endpoints.
+- A funcionalidade reutiliza os dados de consumo apurados a partir de `EXPENSES`, `CREDIT CARDS` e `FINANCIAL OVERVIEW`.
 - Não devem ser duplicados cálculos ou regras financeiras já existentes.
-- A integração com outras funcionalidades deve respeitar os limites arquiteturais estabelecidos.
-- Os cálculos monetários devem utilizar `BigDecimal`.
-- A autorização deve ser validada no back-end.
-- As consultas devem respeitar o grupo familiar do usuário autenticado.
-- A implementação deve ser exclusivamente no back-end nesta etapa.
-- Não implementar geração de sugestões financeiras nesta feature.
+- Os cálculos monetários utilizam `BigDecimal` no backend e valores decimais formatados na interface.
+- A autorização é validada no backend em todas as requisições.
+- As consultas respeitam o isolamento por grupo familiar do usuário autenticado.
+- Não implementar geração de recomendações textuais nesta feature; a entrega restringe-se aos dados analíticos de consumo e variações.
 - Não alterar regras de negócio das funcionalidades de origem para atender aos relatórios.
-- Caso alguma informação necessária não esteja disponível nas funcionalidades existentes, identificar a lacuna antes de implementar, sem inventar campos ou regras.
 
-## 9. Endpoints da API
+## 9. Endpoints da API e contratos para o frontend
 
-Todas as rotas abaixo são exclusivas do Principal e obtêm o grupo familiar da autenticação. Identificadores enviados como filtro não concedem acesso a outros grupos.
+Todas as rotas abaixo são exclusivas do Principal e obtêm o grupo familiar da autenticação JWT. Identificadores enviados como filtro não concedem acesso a outros grupos.
 
-- `GET /api/reports-analytics/expenses/by-category` — agrupa o consumo por categoria. Aceita `startDate` e `endDate` no formato `AAAA-MM-DD`, `category` (até 50 caracteres) e `memberId` (UUID); todos são opcionais. Quando as duas datas forem informadas, `startDate` não pode ser posterior a `endDate`.
-- `GET /api/reports-analytics/expenses/by-member` — agrupa o consumo por integrante. Aceita os mesmos filtros da consulta por categoria.
-- `GET /api/reports-analytics/patterns?month=AAAA-MM` — apresenta as três maiores categorias, preservando empates na última posição, a média histórica e a variação percentual. `month` é obrigatório; filtros opcionais: `category` e `memberId`.
-- `GET /api/reports-analytics/category-variations?month=AAAA-MM` — apresenta somente categorias com aumento estritamente superior a 20%, com valor atual, média histórica e percentual. `month` é obrigatório; filtros opcionais: `category` e `memberId`.
+- `GET /api/reports-analytics/expenses/by-category` — agrupa o consumo por categoria.
+  - **Parâmetros opcionais (Query):** `startDate` e `endDate` no formato `AAAA-MM-DD`, `category` (até 50 caracteres) e `memberId` (UUID). Quando as duas datas forem informadas, `startDate` não pode ser posterior a `endDate`.
+  - **Resposta (200 OK):** Lista de objetos `[{ "category": "ALIMENTACAO", "totalAmount": 450.00 }, ...]`.
+  - **Estado vazio:** Quando não houver despesas no período/filtros, retorna lista vazia `[]`.
+
+- `GET /api/reports-analytics/expenses/by-member` — agrupa o consumo por integrante.
+  - **Parâmetros opcionais (Query):** Mesmos filtros da consulta por categoria (`startDate`, `endDate`, `category`, `memberId`).
+  - **Resposta (200 OK):** Lista de objetos `[{ "memberId": "uuid...", "memberName": "João", "totalAmount": 320.00 }, ...]`.
+  - **Estado vazio:** Quando não houver despesas no período/filtros, retorna lista vazia `[]`.
+
+- `GET /api/reports-analytics/patterns?month=AAAA-MM` — apresenta as três maiores categorias, preservando empates na última posição, a média histórica e a variação percentual.
+  - **Parâmetros (Query):** `month` (obrigatório, formato `AAAA-MM`); filtros opcionais: `category` e `memberId`.
+  - **Resposta (200 OK):**
+    ```json
+    {
+      "period": "2026-11",
+      "analysisAvailable": true,
+      "historyMonthsUsed": 3,
+      "topCategories": [
+        {
+          "category": "ALIMENTACAO",
+          "currentAmount": 1200.00,
+          "historicalAverage": 1000.00,
+          "variationPercent": 20.00
+        }
+      ]
+    }
+    ```
+  - **Estado de histórico insuficiente:** Quando houver menos de dois meses de histórico disponíveis (0 ou 1 mês), a API retorna `200 OK` com `"analysisAvailable": false`, `"historyMonthsUsed": <n>` e `"topCategories": []`. O frontend deve exibir mensagem orientando que são necessários pelo menos 2 meses de histórico para identificar padrões.
+  - **Tratamento de média zero:** Quando a média histórica de uma categoria for zero, `variationPercent` retorna `null` (evitando divisão por zero).
+
+- `GET /api/reports-analytics/category-variations?month=AAAA-MM` — apresenta somente categorias com aumento estritamente superior a 20% em relação à média histórica.
+  - **Parâmetros (Query):** `month` (obrigatório, formato `AAAA-MM`); filtros opcionais: `category` e `memberId`.
+  - **Resposta (200 OK):**
+    ```json
+    {
+      "period": "2026-11",
+      "analysisAvailable": true,
+      "historyMonthsUsed": 3,
+      "variations": [
+        {
+          "category": "LAZER",
+          "currentAmount": 650.00,
+          "historicalAverage": 500.00,
+          "variationPercent": 30.00
+        }
+      ]
+    }
+    ```
+  - **Estado de histórico insuficiente:** Retorna `"analysisAvailable": false`, `"historyMonthsUsed": <n>`, `"variations": []`.
+  - **Estado sem variações:** Se nenhuma categoria tiver aumento > 20%, retorna lista vazia em `"variations": []`.
 
 Parâmetros ausentes ou inválidos, mês inválido e intervalo de datas inconsistente retornam HTTP 400 no formato global de erro. As respostas são DTOs e valores monetários são representados como decimais.

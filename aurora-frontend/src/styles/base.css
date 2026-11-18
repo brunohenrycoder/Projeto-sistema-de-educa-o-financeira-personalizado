@@ -1,0 +1,41 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  line-height: var(--line-height-base);
+  background: Canvas;
+  color: CanvasText;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: LinkText;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+}

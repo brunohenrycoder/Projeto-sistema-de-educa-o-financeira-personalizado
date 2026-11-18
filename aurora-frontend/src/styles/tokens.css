@@ -1,0 +1,27 @@
+/*
+ * Tokens estruturais do Aurora.
+ * Cores de marca e demais tokens visuais serão definidos somente após
+ * inspeção autorizada dos protótipos oficiais. Não declarar fidelidade visual.
+ */
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --line-height-base: 1.5;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 64rem;
+  --content-max-width: 72rem;
+}

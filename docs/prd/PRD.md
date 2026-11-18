@@ -37,9 +37,9 @@
 - Lançamento rápido de gastos por membros e dependentes, com listagem, edição e exclusão dos próprios gastos pelo dependente.
 - Controle de cartão de crédito e fatura em aberto.
 - Cálculo de saldo previsto (semana/mês).
-- Alertas de orçamento, vencimento de contas e endividamento.
-- Relatórios de gastos por categoria e pessoa, análises de renda/gastos e sugestões de melhoria.
-- Metas automáticas de economia.
+- Alertas de orçamento e vencimento de contas na entrega atual (alertas de endividamento do RF-014 postergados para versão futura).
+- Relatórios de gastos por categoria e pessoa, análises de renda/gastos e identificação de variações de categorias, contemplando backend e frontend React.
+- Metas de economia a partir da sobra média familiar realizada.
 
 ### Fora do Escopo
 
@@ -68,11 +68,11 @@ Em caso de conflito entre o enunciado do projeto e a entrevista, a entrevista pr
 - **RF-009 — Consulta de gastos por membro:** Acompanhamento detalhado pelo usuário principal.
 - **RF-012 — Alerta de gastos perto da renda:** Aviso preventivo contra autoconsumo desenfreado.
 - **RF-013 — Aviso de contas próximas do vencimento:** Notificações diárias sobre contas a vencer ou atrasadas.
-- **RF-014 — Alerta de endividamento:** Monitoramento do comprometimento da renda com fixas, parcelas e cartões.
-- **RF-015 — Relatório de gastos:** Visão por categoria e por pessoa da família.
-- **RF-016 — Análise de renda e gastos:** Identificação de padrões comparando com médias anteriores.
-- **RF-017 — Sugestões personalizadas:** Insights informativos baseados nas variações de gastos.
-- **RF-018 — Metas automáticas:** Sugestões de economia calculadas a partir da sobra média familiar.
+- **RF-014 — Alerta de endividamento:** Monitoramento do comprometimento da renda com fixas, parcelas e cartões. *(Status: Pendente de validação de escopo e classificação formal de dívidas; mantido fora da versão acadêmica atual conforme SPEC de NOTIFICATIONS — NOT-03)*.
+- **RF-015 — Relatório de gastos:** Visão por categoria e por pessoa da família, com interface no frontend React consumindo a API existente.
+- **RF-016 — Análise de renda e gastos:** Identificação de padrões comparando com médias de até 3 meses anteriores (exige mínimo de 2 meses de histórico), com interface no frontend React.
+- **RF-017 — Sugestões personalizadas:** Insights informativos baseados nas variações de gastos. *(Status: O backend fornece os dados quantitativos de categorias com aumento estritamente superior a 20% em REPORTS & ANALYTICS; a geração de recomendações textuais personalizadas permanece sem contrato funcional definido e não deve ser simulada pelo frontend)*.
+- **RF-018 — Metas automáticas:** Sugestões de economia calculadas a partir da sobra média familiar realizada dos três meses anteriores. *(Status: Implementada consulta de sobra positiva e confirmação de meta; a recusa de sugestão não possui endpoint ou persistência no backend, atuando apenas como dispensa visual no frontend)*.
 
 Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 
@@ -82,7 +82,7 @@ Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 - **RN-02:** Todo gasto fica rigidamente vinculado a quem o registrou. O dependente só edita e exclui os gastos que ele mesmo registrou.
 - **RN-03:** Somente o usuário principal adiciona ou remove membros da família.
 - **RN-04:** Análises e sugestões respeitam permissões (apenas o principal vê a visão global).
-- **RN-05:** Metas automáticas são apenas sugeridas; exigem decisão de aceitação do usuário.
+- **RN-05:** Metas automáticas são apenas sugeridas; exigem decisão explícita do usuário para criação. O Principal pode aceitar o valor sugerido, ajustar o valor ou dispensar a sugestão (a recusa atua como dispensa visual no frontend e não é persistida na API atual).
 - **RN-06:** A forma de pagamento é obrigatória ao pagar contas e lançar gastos para rastreio do cartão.
 - **RN-07:** Contas vencidas sem pagamento passam automaticamente para a situação ATRASADA.
 
@@ -97,13 +97,14 @@ Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 - **RNF-07:** Linguagem simples e acessível nas telas e mensagens.
 - **RNF-08:** Compatibilidade com navegadores modernos.
 
-## 7. Pontos em aberto com o cliente
+## 7. Pontos em aberto e definições consolidadas na auditoria
 
 1. Pode haver mais de um usuário principal (por exemplo, um casal)?
-2. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)?
+2. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)? *(Na versão acadêmica atual, as notificações são consultadas internamente no app pelo Principal via API)*.
 3. Os dependentes precisam de categorias pré-definidas ao lançar um gasto?
-4. Os percentuais dos alertas (80% no RF-012; 30% e 50% no RF-014) fazem sentido?
-5. As categorias sugeridas atendem, ou ele quer outras?
+4. Os percentuais dos alertas: o limite de 80% de gastos em relação à renda (RF-012) está ativo e implementado; os alertas de 30% e 50% de endividamento (RF-014 / NOT-03) foram mantidos fora da versão acadêmica atual até que haja uma classificação formal de dívidas no modelo de dados.
+5. Recomendações personalizadas (RF-017): o backend entrega análise de aumento superior a 20% por categoria; a elaboração de textos de recomendação personalizada permanece sem contrato funcional definido e não será simulada pelo frontend.
+6. Recusa de metas (RF-018 / RN-05): a API permite consultar sobra positiva e confirmar meta; a recusa opera apenas como dispensa visual no frontend, sem persistência no backend.
 
 As definições de cartão manual, limite, parcelas e ciclo da fatura estão registradas em `docs/spec/credit-cards.md`.
 

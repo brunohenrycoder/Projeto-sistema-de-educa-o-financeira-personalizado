@@ -205,10 +205,31 @@ O cálculo somente deve ocorrer quando a renda familiar considerada for maior qu
 - A implementação desta feature não deve alterar as regras de negócio já definidas nas funcionalidades de origem.
 - Os cálculos devem utilizar tipos numéricos adequados para valores monetários, preservando a precisão decimal.
 
-## 10. API implementada
+## 10. API implementada e contratos para o frontend
 
-- `GET /api/financial-overview?month=AAAA-MM` — consulta a visão financeira mensal. O parâmetro `month` é opcional e, quando omitido, utiliza o mês atual. A consulta é restrita ao Principal autenticado e não recebe identificadores de usuário ou grupo familiar.
-- A resposta informa entradas e saídas realizadas e previstas, saldo líquido projetado, renda e despesas consideradas, percentual de comprometimento, estado do limite de 80% e alerta persistido, quando existente.
+- `GET /api/financial-overview?month=AAAA-MM` — Consulta a visão financeira mensal consolidada.
+  - **Parâmetro (Query):** `month` é opcional (formato `AAAA-MM`); se omitido, assume o mês corrente.
+  - **Acesso:** Restrito ao Principal autenticado via JWT. O grupo familiar é extraído da autenticação.
+  - **Resposta (200 OK):**
+    ```json
+    {
+      "period": "2026-11",
+      "realizedIncome": 5000.00,
+      "plannedIncome": 0.00,
+      "realizedExpenses": 1800.00,
+      "plannedExpenses": 1200.00,
+      "projectedBalance": 2000.00,
+      "incomeConsidered": 5000.00,
+      "expensesConsidered": 3000.00,
+      "commitmentPercent": 60.00,
+      "alertThresholdPercent": 80.00,
+      "thresholdReached": false,
+      "alert": null
+    }
+    ```
+  - **Estado de ausência de movimentações:** Se não houver lançamentos no mês consultado, os campos monetários retornam `0.00`, `commitmentPercent` retorna `null`, `thresholdReached` retorna `false` e `alert` retorna `null`.
+  - **Tratamento de renda igual a zero:** Quando `incomeConsidered` for igual a `0.00`, o campo `commitmentPercent` retorna `null` (para evitar divisão por zero), `thresholdReached` retorna `false` e nenhum alerta percentual é gerado. O frontend deve tratar `commitmentPercent == null` sem exibir erro ou indicadores de comprometimento.
+  - **Presença de alerta:** Se o comprometimento atingir ou ultrapassar 80% e já houver alerta persistido pela rotina diária no mês, o objeto `alert` é retornado com `id`, `referenceMonth`, `thresholdPercent`, `commitmentPercent` e `createdAt`. A consulta GET não cria notificações.
 
 ## 11. Regras de consolidação adotadas
 

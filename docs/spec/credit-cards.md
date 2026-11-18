@@ -442,31 +442,87 @@ O mesmo valor de crédito não poderá ser aplicado mais de uma vez.
 - [ ] A remoção de integrantes não apaga o histórico financeiro.
 - [ ] Todas as operações respeitam o isolamento de dados por grupo familiar.
 
-## 8. Dependências
+## 8. Integração entre módulos e divisão de responsabilidades
 
-O módulo depende diretamente das funcionalidades AUTH, FAMILY MANAGEMENT e EXPENSES. A integração com PAYABLE BILLS será implementada posteriormente, permitindo que contas a pagar quitadas com cartão de crédito gerem ou sejam vinculadas a despesas correspondentes, evitando duplicidade de lançamentos.
+O módulo integra-se diretamente com `AUTH`, `FAMILY MANAGEMENT`, `EXPENSES`, `PAYABLE BILLS` e `FINANCIAL OVERVIEW`:
 
-## 9. Endpoints e estado de implementação
+### 8.1. Integração com Contas a Pagar (PAYABLE BILLS)
+- **Quitação de contas com cartão:** Quando uma conta a pagar é quitada utilizando o método `CARTAO_CREDITO` (`POST /api/payable-bills/{billId}/payments`), o módulo `PAYABLE BILLS` registra uma despesa correspondente em `EXPENSES` e aciona o `CreditCardLedger` para registrar uma compra à vista (1 parcela) no cartão ativo do grupo familiar (`creditCardLedger.registerPurchase(expense, 1)`). Essa compra é inserida na fatura aberta do cartão.
+- **Divisão clara de responsabilidades:**
+  - `PAYABLE BILLS` gerencia o cadastro da conta, vencimento original, recorrência mensal e quitação da obrigação individual.
+  - `CREDIT CARDS` gerencia o cartão ativo, a consolidação das faturas, o controle do limite, a alocação de parcelas e o registro de pagamentos da fatura.
+  - **Quitação da fatura:** A fatura do cartão é quitada exclusivamente pelo módulo `CREDIT CARDS` (`POST /api/credit-cards/invoices/{invoiceId}/payments`). A fatura não é convertida em um novo registro de conta a pagar em `PAYABLE BILLS`.
 
-O backend implementa os seguintes endpoints, protegidos por autenticação e autorização:
+### 8.2. Reflexo no Fluxo Financeiro (FINANCIAL OVERVIEW)
+- **Sem duplicidade no fluxo de caixa:** A quitação de uma conta a pagar via `CARTAO_CREDITO` não é contabilizada como saída de caixa no momento da baixa da conta. A saída de caixa efetiva ocorre somente na data do pagamento da fatura do cartão (`CreditCardPayment`).
+- **Saldo projetado:** O saldo pendente da fatura aberta ou fechada (`outstandingAmount`) compõe as saídas previstas na data do vencimento da fatura.
+- **Sem duplicidade de consumo:** As compras efetuadas com cartão (inclusive contas pagas no crédito) compõem as despesas de consumo no período de competência da fatura. O pagamento da fatura não é contabilizado novamente como despesa de consumo.
 
-- `POST /api/credit-cards` — Principal cadastra o cartão ativo do grupo.
-- `GET /api/credit-cards` — Principal consulta cartões atuais e desativados, limite comprometido e créditos pendentes.
-- `PUT /api/credit-cards/{cardId}` — Principal atualiza configurações; não permite limite inferior ao comprometimento.
-- `DELETE /api/credit-cards/{cardId}` — Principal desativa o cartão, preservando o histórico.
-- `GET /api/credit-cards/invoices` — Principal consulta faturas, com filtro opcional por situação.
-- `GET /api/credit-cards/invoices/{invoiceId}` — Principal consulta lançamentos e movimentações da fatura.
-- `POST /api/credit-cards/invoices/{invoiceId}/payments` — Principal registra pagamento total ou parcial.
-- `POST /api/credit-cards/expenses/{expenseId}/refunds` — Principal registra estorno da despesa original.
+## 9. Endpoints da API e contratos para o frontend
 
-`POST /api/expenses` aceita `installmentCount` opcional: o padrão é 1; compras no crédito podem ter de 2 a 36 parcelas. O backend identifica o cartão e as faturas sem receber seus identificadores do cliente.
+Todas as operações de administração e consulta de cartões e faturas são restritas ao Principal autenticado:
+
+- `POST /api/credit-cards` — Cadastra o cartão ativo do grupo familiar.
+  - **Payload:** `name`, `issuer`, `network` (`VISA`, `MASTERCARD`, `ELO`, `AMERICAN_EXPRESS`, `HIPERCARD`, `OUTRA`), `otherNetworkName` (obrigatório se `OUTRA`), `lastFourDigits` (opcional, 4 dígitos numéricos), `totalLimit` (maior que zero), `closingDay` (1 a 28), `dueDay` (1 a 28).
+  - **Resposta (201 Created):** Dados do cartão criado e status ativo.
+
+- `GET /api/credit-cards` — Consulta os cartões do grupo familiar (ativos e desativados) e os indicadores de limite.
+  - **Resposta (200 OK):**
+    ```json
+    {
+      "cards": [
+        {
+          "id": "uuid...",
+          "name": "Cartão Principal",
+          "issuer": "Banco do Brasil",
+          "network": "VISA",
+          "otherNetworkName": null,
+          "lastFourDigits": "1234",
+          "totalLimit": 5000.00,
+          "limitUsed": 1500.00,
+          "limitAvailable": 3500.00,
+          "pendingCreditAmount": 0.00,
+          "limitExceeded": false,
+          "closingDay": 10,
+          "dueDay": 20,
+          "active": true,
+          "limitDisclaimer": "Comprometimento calculado considerando parcelas futuras contratadas no Aurora."
+        }
+      ]
+    }
+    ```
+
+- `PUT /api/credit-cards/{cardId}` — Atualiza configurações e limite do cartão.
+  - Não permite reduzir o limite total para valor inferior ao comprometimento atual (`limitUsed`).
+
+- `DELETE /api/credit-cards/{cardId}` — Desativação lógica do cartão. Preserva integralmente o histórico, faturas, parcelas e créditos pendentes.
+
+- `GET /api/credit-cards/invoices` — Lista as faturas do cartão ativo do grupo familiar.
+  - **Parâmetro opcional (Query):** `status` (`OPEN`, `CLOSED`, `PARTIALLY_PAID`, `PAID`, `OVERDUE`).
+  - **Resposta (200 OK):** Lista resumida de faturas com `id`, `cardId`, `cycleStart`, `closingDate`, `dueDate`, `status`, `totalAmount`, `paidAmount`, `creditAmount`, `outstandingAmount`.
+
+- `GET /api/credit-cards/invoices/{invoiceId}` — Consulta detalhada de uma fatura específica.
+  - **Resposta (200 OK):** Detalhamento completo contendo:
+    - Dados gerais: `id`, `cardId`, datas do ciclo, `status`, `totalAmount`, `paidAmount`, `creditAmount`, `outstandingAmount`.
+    - `installments`: lista de parcelas que compõem a fatura (`id`, `expenseId`, `memberName`, `category`, `amount`, `paidAmount`, `refundedAmount`, `outstandingAmount`, `installmentNumber`, `installmentCount`, `cancelled`).
+    - `payments`: lista de pagamentos registrados nesta fatura (`id`, `amount`, `paidAt`, `registeredBy`).
+    - `creditApplications`: créditos de estorno aplicados à fatura (`id`, `refundId`, `amount`, `remainingCredit`, `appliedAt`).
+    - `refunds`: movimentações de estorno associadas (`id`, `expenseId`, `amount`, `createdAt`, `registeredBy`).
+
+- `POST /api/credit-cards/invoices/{invoiceId}/payments` — Registra pagamento integral ou parcial da fatura.
+  - **Payload:** `{"amount": 500.00}`.
+  - **Validações:** `amount` > 0 e menor ou igual a `outstandingAmount`.
+  - **Efeito:** Abate primeiro as parcelas mais antigas da fatura, atualiza `paidAmount` e `outstandingAmount`. Fatura muda para `PARTIALLY_PAID` (se restar saldo) ou `PAID` (se saldo zero). Registrado no histórico com data e responsável.
+
+- `POST /api/credit-cards/expenses/{expenseId}/refunds` — Registra estorno parcial ou integral vinculado à despesa original.
+  - **Payload:** `{"amount": 100.00}`.
+  - **Efeito:** Cancela/reduz primeiro parcelas futuras ainda não cobradas. O excedente é registrado como crédito pendente e aplicado automaticamente à próxima fatura aberta disponível.
+
+`POST /api/expenses` aceita `installmentCount` opcional: o padrão é 1; compras no crédito podem ter de 2 a 36 parcelas. O backend identifica o cartão ativo e as faturas sem exigir que o cliente informe identificadores de cartão ou fatura.
 
 O fechamento e a atualização das situações das faturas são executados diariamente pelo Spring Scheduler às 00:05, além do cálculo do ciclo no registro da compra. As datas e situações ficam persistidas; após uma indisponibilidade, a próxima execução processa os ciclos vencidos sem depender de acesso de usuários.
 
-As políticas de alocação para os casos não determinados explicitamente pela SPEC são:
-
+As políticas de alocação são:
 - Pagamentos parciais reduzem primeiro as parcelas mais antigas da fatura.
 - Estornos reduzem primeiro as parcelas ainda não cobradas em ordem de vencimento.
 - Créditos de estorno reduzem o comprometimento da parcela à qual foram aplicados e permanecem pendentes se não houver fatura aberta.
-
-A integração com PAYABLE BILLS continua fora desta etapa.
