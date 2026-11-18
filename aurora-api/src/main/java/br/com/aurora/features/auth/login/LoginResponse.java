@@ -19,5 +19,7 @@ public class LoginResponse {
     private long expiresIn;
     private UUID userId;
     private UUID familyGroupId;
+    private String name;
+    private String email;
     private Role role;
 }

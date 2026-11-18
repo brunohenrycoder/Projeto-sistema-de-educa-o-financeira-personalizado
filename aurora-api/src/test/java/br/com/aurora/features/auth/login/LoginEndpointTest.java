@@ -67,6 +67,11 @@ class LoginEndpointTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("PRINCIPAL"))
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
+                .andExpect(jsonPath("$.expiresIn").isNumber())
+                .andExpect(jsonPath("$.userId").value(principal.getId().toString()))
+                .andExpect(jsonPath("$.familyGroupId").value(principal.getFamilyGroup().getId().toString()))
+                .andExpect(jsonPath("$.name").value("Usuário de teste"))
+                .andExpect(jsonPath("$.email").value(principal.getEmail()))
                 .andReturn();
         MvcResult dependentResult = login(dependent.getEmail(), PASSWORD)
                 .andExpect(status().isOk())
