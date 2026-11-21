@@ -1,0 +1,810 @@
+/* Cartões de crédito — mobile first; tabela no desktop, cards no mobile. */
+
+.credit-cards__current-invoice {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--aurora-green-50);
+}
+
+.credit-cards__current-invoice-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.credit-cards__current-invoice-value {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__current-invoice-meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__current-invoice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.credit-cards__secondary {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__secondary:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  padding-block: var(--space-6);
+}
+
+.credit-cards__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__breadcrumb [aria-current='page'] {
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+.credit-cards__hero {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.credit-cards__intro {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.credit-cards__register {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__register:hover {
+  background: var(--aurora-green-500);
+  border-color: var(--aurora-green-500);
+}
+
+.credit-cards__register:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__success {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__subtitle {
+  max-width: 40rem;
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__section {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.credit-cards__section-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__status,
+.credit-cards__empty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__empty-hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__error {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-md);
+  color: var(--aurora-error);
+}
+
+.credit-cards__error p {
+  margin: 0;
+}
+
+.credit-cards__retry {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__retry:hover {
+  background: var(--aurora-green-500);
+  border-color: var(--aurora-green-500);
+}
+
+.credit-cards__retry:focus-visible,
+.credit-cards__details-button:focus-visible,
+.credit-cards__history-toggle:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__cards {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.credit-cards__card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-lg);
+  background: var(--aurora-surface);
+}
+
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__card-head,
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__limits {
+  color: var(--aurora-surface);
+}
+
+.credit-cards__cards > .credit-cards__card:first-child {
+  background: var(--aurora-green-700);
+  border-color: var(--aurora-green-700);
+}
+
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__card-name,
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__card-meta,
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__card-days,
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__limits dt,
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__limits dd {
+  color: var(--aurora-surface);
+}
+
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__limits > div {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.credit-cards__cards > .credit-cards__card:first-child .credit-cards__tag--ativo {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--aurora-surface);
+}
+
+.credit-cards__card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.credit-cards__card-name {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--aurora-ink);
+}
+
+.credit-cards__card-meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--aurora-muted);
+}
+
+.credit-cards__tag--ativo {
+  border-color: var(--aurora-green-300);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__limits {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.credit-cards__limits > div {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+}
+
+.credit-cards__limits dt {
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__limits dd {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--aurora-green-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-cards__card-days,
+.credit-cards__disclaimer {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__credit {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__limit-alert {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-left: 3px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-error);
+}
+
+.credit-cards__card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.credit-cards__edit-button,
+.credit-cards__deactivate-button {
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__edit-button:hover {
+  border-color: var(--aurora-green-700);
+}
+
+.credit-cards__deactivate-button {
+  color: var(--aurora-error);
+}
+
+.credit-cards__deactivate-button:hover {
+  border-color: var(--aurora-error);
+}
+
+.credit-cards__edit-button:focus-visible,
+.credit-cards__deactivate-button:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__panel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.credit-cards__panel form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.credit-cards__form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.credit-cards__field {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.credit-cards__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--aurora-muted);
+}
+
+.credit-cards__field input,
+.credit-cards__field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+}
+
+.credit-cards__field input:focus-visible,
+.credit-cards__field select:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__field [aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.credit-cards__field-error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-error);
+}
+
+.credit-cards__panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.credit-cards__submit,
+.credit-cards__deactivate-confirm,
+.credit-cards__cancel {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__submit {
+  border: 1px solid var(--aurora-green-700);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+}
+
+.credit-cards__submit:hover {
+  background: var(--aurora-green-500);
+  border-color: var(--aurora-green-500);
+}
+
+.credit-cards__deactivate-confirm {
+  border: 1px solid var(--aurora-error);
+  background: var(--aurora-error);
+  color: var(--aurora-surface);
+}
+
+.credit-cards__cancel {
+  border: 1px solid var(--aurora-border);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.credit-cards__submit:focus-visible,
+.credit-cards__deactivate-confirm:focus-visible,
+.credit-cards__cancel:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__confirm-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__invoices-head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.credit-cards__filter {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.credit-cards__filter label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-muted);
+}
+
+.credit-cards__filter select {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+}
+
+.credit-cards__filter select:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__table-scroll {
+  overflow-x: auto;
+}
+
+.credit-cards__table {
+  display: none;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.credit-cards__table th,
+.credit-cards__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--aurora-green-100);
+  text-align: left;
+}
+
+.credit-cards__table th {
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.credit-cards__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.credit-cards__cell--amount {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-cards__status-tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--aurora-ink);
+}
+
+.credit-cards__status-tag--OPEN {
+  border-color: var(--aurora-green-300);
+  background: var(--aurora-surface);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__status-tag--CLOSED {
+  border-color: var(--aurora-border);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__status-tag--PARTIALLY_PAID {
+  border-color: var(--aurora-peach);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.credit-cards__status-tag--PAID {
+  border-color: var(--aurora-green-700);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__status-tag--OVERDUE {
+  border-color: var(--aurora-error);
+  background: var(--aurora-error);
+  color: var(--aurora-surface);
+}
+
+.credit-cards__details-button {
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__details-button:hover {
+  border-color: var(--aurora-green-700);
+}
+
+.credit-cards__mobile-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.credit-cards__invoice-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+}
+
+.credit-cards__invoice-value {
+  margin: 0;
+  font-weight: 700;
+  color: var(--aurora-green-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-cards__invoice-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.credit-cards__invoice-details dt {
+  color: var(--aurora-muted);
+}
+
+.credit-cards__invoice-details dd {
+  margin: 0;
+}
+
+.credit-cards__details-button--card {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+
+.credit-cards__history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit-cards__history-toggle:hover {
+  border-color: var(--aurora-green-500);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__history-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-cards__history {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.credit-cards__history-title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--aurora-green-700);
+}
+
+.credit-cards__history-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.credit-cards__history-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+}
+
+.credit-cards__history-period {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.credit-cards__history-value {
+  margin: var(--space-1) 0 0;
+  font-weight: 700;
+  color: var(--aurora-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-cards__back-link {
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.credit-cards__back-link:hover {
+  text-decoration: underline;
+}
+
+.credit-cards__back-link:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.credit-cards__page-footer {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--aurora-border);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .credit-cards__hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .credit-cards__register {
+    justify-self: end;
+  }
+
+  .credit-cards__limits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .credit-cards__form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .credit-cards__invoices-head {
+    grid-template-columns: auto auto;
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .credit-cards__filter {
+    justify-items: end;
+  }
+}
+
+@media (min-width: 64rem) {
+  .credit-cards__title {
+    font-size: 2rem;
+  }
+
+  .credit-cards__table {
+    display: table;
+  }
+
+  .credit-cards__mobile-list {
+    display: none;
+  }
+}

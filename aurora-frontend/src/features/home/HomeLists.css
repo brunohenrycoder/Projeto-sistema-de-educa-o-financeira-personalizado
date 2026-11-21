@@ -1,0 +1,143 @@
+/* Resumos de contas e gastos na Home — mobile first. */
+
+.home__lists {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.home-list {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.home-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.home-list__title {
+  margin: 0;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-lg);
+}
+
+.home-list__link {
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.home-list__link:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.home-list__status {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.home-list__error {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  color: var(--aurora-error);
+}
+
+.home-list__error p {
+  margin: 0;
+}
+
+.home-list__retry {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-error);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.home-list__retry:focus-visible {
+  outline: 2px solid var(--aurora-error);
+  outline-offset: 2px;
+}
+
+.home-list__items {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-list__item {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+}
+
+.home-list__description {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.home-list__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.home-list__details div {
+  display: grid;
+  min-width: 0;
+}
+
+.home-list__details dt {
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.home-list__details dd {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.home-list__status-tag--ATRASADA {
+  color: var(--aurora-error);
+  font-weight: 600;
+}
+
+.home-list__status-tag--PENDENTE {
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+@media (min-width: 64rem) {
+  .home__lists {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

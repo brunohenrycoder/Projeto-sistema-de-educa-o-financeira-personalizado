@@ -1,0 +1,238 @@
+/* Confirmação de e-mail — mobile first; desktop em dois painéis (identidade Aurora). */
+
+.confirm-email {
+  display: block;
+  min-height: 100vh;
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.confirm-email__brand {
+  display: none;
+}
+
+.confirm-email__access {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.confirm-email__loading {
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  font-size: var(--font-size-md);
+  color: var(--aurora-muted);
+}
+
+.confirm-email__content {
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-5);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.confirm-email__mobile-intro {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.confirm-email__head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.confirm-email__eyebrow--desktop {
+  display: none;
+}
+
+.confirm-email__logo {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.confirm-email__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--aurora-muted);
+  text-transform: uppercase;
+}
+
+.confirm-email__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  color: var(--aurora-green-700);
+}
+
+.confirm-email__body {
+  display: grid;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.confirm-email__body p {
+  margin: 0;
+}
+
+.confirm-email__body strong {
+  color: var(--aurora-ink);
+}
+
+.confirm-email__detail {
+  font-size: 0.85rem;
+}
+
+.confirm-email__info {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.confirm-email__info-title {
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.confirm-email__info p {
+  margin: 0;
+}
+
+.confirm-email__actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.confirm-email__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirm-email__link {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-green-700);
+  text-decoration: none;
+  padding: var(--space-2);
+}
+
+.confirm-email__art {
+  display: grid;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--aurora-green-50);
+  border: 1px solid var(--aurora-green-100);
+}
+
+.confirm-email__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.confirm-email__sky { fill: var(--aurora-green-50); }
+.confirm-email__sun { fill: var(--aurora-peach); }
+.confirm-email__hill--back { fill: var(--aurora-green-300); }
+.confirm-email__hill--front { fill: var(--aurora-green-500); }
+
+.confirm-email__quote {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--aurora-green-700);
+}
+
+/* ----- Desktop: dois painéis ----- */
+@media (min-width: 64rem) {
+  .confirm-email {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+
+  .confirm-email__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: var(--aurora-green-50);
+  }
+
+  .confirm-email__brand-top {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 30rem;
+  }
+
+  .confirm-email__eyebrow--brand {
+    color: var(--aurora-green-500);
+  }
+
+  .confirm-email__brand-title {
+    margin: 0;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: var(--aurora-green-700);
+  }
+
+  .confirm-email__brand-subtitle {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--aurora-muted);
+  }
+
+  .confirm-email__art {
+    width: 100%;
+    max-width: 30rem;
+    border-radius: 1.25rem;
+    border: none;
+  }
+
+  .confirm-email__access {
+    justify-content: center;
+    padding: var(--space-8);
+  }
+
+  .confirm-email__content {
+    max-width: 28rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .confirm-email__mobile-intro {
+    display: none;
+  }
+
+  .confirm-email__eyebrow--desktop {
+    display: block;
+  }
+
+  .confirm-email__title {
+    font-size: 2rem;
+  }
+
+  .confirm-email__link {
+    text-align: left;
+    padding: 0;
+  }
+}

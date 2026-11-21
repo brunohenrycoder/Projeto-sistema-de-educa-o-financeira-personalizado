@@ -1,0 +1,691 @@
+/* Contas a pagar — mobile first; tabela e cards conforme a largura. */
+
+.payable-bills {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  padding-block: var(--space-6);
+}
+
+.payable-bills__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.payable-bills__breadcrumb [aria-current='page'] {
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+.payable-bills__hero {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.payable-bills__intro {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.payable-bills__register {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__register:hover {
+  background: var(--aurora-green-500);
+  border-color: var(--aurora-green-500);
+}
+
+.payable-bills__register:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__subtitle {
+  max-width: 40rem;
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--aurora-muted);
+}
+
+.payable-bills__status,
+.payable-bills__empty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.payable-bills__error {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-md);
+  color: var(--aurora-error);
+}
+
+.payable-bills__error p {
+  margin: 0;
+}
+
+.payable-bills__retry {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__alert {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-left: 3px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-error);
+}
+
+.payable-bills__indicators {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.payable-bills__indicator {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--aurora-surface);
+}
+
+.payable-bills__indicator--alerta {
+  background: #fdf1ef;
+  border-color: #f3d5cf;
+}
+
+.payable-bills__indicator-label {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.payable-bills__indicator-value {
+  margin: 0;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.payable-bills__indicator--alerta .payable-bills__indicator-value {
+  color: var(--aurora-error);
+}
+
+.payable-bills__indicator-detail {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (min-width: 64rem) {
+  .payable-bills__indicators {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.payable-bills__card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.payable-bills__card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__table-scroll {
+  overflow-x: auto;
+}
+
+.payable-bills__table {
+  display: none;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.payable-bills__table th,
+.payable-bills__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--aurora-green-100);
+  text-align: left;
+}
+
+.payable-bills__table th {
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.payable-bills__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.payable-bills__cell--amount {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.payable-bills__status-tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--aurora-ink);
+}
+
+.payable-bills__status-tag--ATRASADA {
+  border-color: var(--aurora-error);
+  background: var(--aurora-error);
+  color: var(--aurora-surface);
+}
+
+.payable-bills__status-tag--PAGA {
+  border-color: var(--aurora-green-700);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__mobile-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.payable-bills__bill-card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-left: 3px solid var(--aurora-green-300);
+  border-radius: var(--radius-sm);
+}
+
+.payable-bills__bill-description,
+.payable-bills__bill-value {
+  margin: 0;
+}
+
+.payable-bills__bill-value {
+  font-weight: 700;
+  color: var(--aurora-green-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.payable-bills__bill-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.payable-bills__bill-details dt {
+  color: var(--aurora-muted);
+}
+
+.payable-bills__bill-details dd {
+  margin: 0;
+}
+
+.payable-bills__page-footer {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--aurora-border);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+  text-align: center;
+}
+
+.payable-bills__success {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.payable-bills__edit-button {
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__edit-button:hover,
+.payable-bills__pay-button:hover {
+  border-color: var(--aurora-green-700);
+}
+
+.payable-bills__edit-button:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__edit-button--card,
+.payable-bills__pay-button--card {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+
+.payable-bills__pay-button {
+  margin-left: var(--space-2);
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-green-700);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__pay-button--card {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+
+.payable-bills__pay-button:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__cancel-button {
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-error);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__cancel-button--card,
+.payable-bills__edit-button--card,
+.payable-bills__pay-button--card {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+
+.payable-bills__cancel-button:focus-visible {
+  outline: 2px solid var(--aurora-error);
+  outline-offset: 2px;
+}
+
+.payable-bills__history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__history-toggle:hover {
+  border-color: var(--aurora-green-500);
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__history-toggle:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__history-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.payable-bills__history {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.payable-bills__history-button {
+  min-height: 2.25rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__history-button:hover {
+  border-color: var(--aurora-green-700);
+}
+
+.payable-bills__history-button:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__history-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.payable-bills__history-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.payable-bills__history-item {
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-left: 3px solid var(--aurora-green-300);
+  border-radius: var(--radius-sm);
+}
+
+.payable-bills__history-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.payable-bills__history-details dt {
+  color: var(--aurora-muted);
+}
+
+.payable-bills__history-details dd {
+  margin: 0;
+}
+
+.payable-bills__confirm {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-left: 3px solid var(--aurora-error);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.payable-bills__confirm-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__confirm-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.payable-bills__confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.payable-bills__cancel-confirm {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-md);
+  background: var(--aurora-error);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__confirm-cancel {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__cancel-confirm:disabled,
+.payable-bills__confirm-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.payable-bills__pay-form {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-left: 3px solid var(--aurora-green-500);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.payable-bills__pay-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--aurora-green-700);
+}
+
+.payable-bills__pay-detail {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-ink);
+}
+
+.payable-bills__pay-form form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.payable-bills__pay-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.payable-bills__pay-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--aurora-muted);
+}
+
+.payable-bills__pay-field input,
+.payable-bills__pay-field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.payable-bills__pay-field input:focus-visible,
+.payable-bills__pay-field select:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.payable-bills__pay-field [aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.payable-bills__pay-error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-error);
+}
+
+.payable-bills__pay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.payable-bills__pay-confirm,
+.payable-bills__pay-cancel {
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.payable-bills__pay-confirm {
+  border: 1px solid var(--aurora-green-700);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+}
+
+.payable-bills__pay-cancel {
+  border: 1px solid var(--aurora-border);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.payable-bills__pay-confirm:disabled,
+.payable-bills__pay-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (min-width: 64rem) {
+  .payable-bills__hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--space-6);
+  }
+
+  .payable-bills__register {
+    justify-self: end;
+  }
+
+  .payable-bills__title {
+    font-size: 2rem;
+  }
+
+  .payable-bills__table {
+    display: table;
+  }
+
+  .payable-bills__mobile-list {
+    display: none;
+  }
+}

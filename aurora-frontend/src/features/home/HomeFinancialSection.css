@@ -1,0 +1,180 @@
+/* Blocos financeiros da Home — mobile first, apenas para o Principal. */
+
+.home-finance {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.home-finance__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.home-finance__period {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.home-finance__period:hover {
+  background: var(--aurora-green-50);
+}
+
+.home-finance__period:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.home-finance__period[aria-pressed='true'] {
+  border-color: var(--aurora-green-500);
+  background: var(--aurora-green-100);
+  color: var(--aurora-green-700);
+  font-weight: 700;
+}
+
+.home-finance__summary,
+.home-finance__alert {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.home-finance__summary-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.home-finance__title {
+  margin: 0;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-lg);
+}
+
+.home-finance__period-label {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.home-finance__cards {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-finance__card {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+}
+
+.home-finance__card-label {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.home-finance__card-value {
+  margin: 0;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.home-finance__card:first-child {
+  border-color: var(--aurora-green-700);
+  background: var(--aurora-green-700);
+}
+
+.home-finance__card:first-child .home-finance__card-label,
+.home-finance__card:first-child .home-finance__card-value {
+  color: var(--aurora-surface);
+}
+
+.home-finance__status,
+.home-finance__empty {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: var(--font-size-sm);
+}
+
+.home-finance__error {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  color: var(--aurora-error);
+}
+
+.home-finance__error p {
+  margin: 0;
+}
+
+.home-finance__retry {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-error);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.home-finance__retry:focus-visible {
+  outline: 2px solid var(--aurora-error);
+  outline-offset: 2px;
+}
+
+.home-finance__alert {
+  border-color: var(--aurora-peach);
+  background: var(--aurora-green-50);
+}
+
+.home-finance__alert-title {
+  margin: 0;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-md);
+}
+
+.home-finance__alert-percent,
+.home-finance__alert-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.home-finance__alert-link {
+  justify-self: start;
+  color: var(--aurora-green-700);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.home-finance__alert-link:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+@media (min-width: 40rem) {
+  .home-finance__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useInRouterContext, useLocation } from 'react-router-dom'
-import { logout as logoutRequest } from '../../features/logout/api/logout.js'
+import { logout as logoutRequest } from '../../features/auth/api/logout.js'
 import { setTokenProvider, setUnauthorizedHandler } from '../api/client.js'
 import { clearSession, hasRole, isSessionExpired, readSession, saveSession } from './session.js'
 

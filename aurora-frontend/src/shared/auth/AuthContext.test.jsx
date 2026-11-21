@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider, useAuth } from './AuthContext.jsx'
 import { request } from '../api/client.js'
 
-vi.mock('../../features/logout/api/logout.js', () => ({ logout: vi.fn() }))
+vi.mock('../../features/auth/api/logout.js', () => ({ logout: vi.fn() }))
 
-import { logout as logoutRequest } from '../../features/logout/api/logout.js'
+import { logout as logoutRequest } from '../../features/auth/api/logout.js'
 
 const SESSION_KEY = 'aurora.session'
 const SESSION = {

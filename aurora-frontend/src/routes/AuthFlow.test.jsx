@@ -2,18 +2,46 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 
-vi.mock('../features/login/api/login.js', () => ({ login: vi.fn() }))
-vi.mock('../features/register/api/registerUser.js', () => ({ registerUser: vi.fn() }))
-vi.mock('../features/confirmemail/api/confirmEmail.js', () => ({ confirmEmail: vi.fn() }))
-vi.mock('../features/logout/api/logout.js', () => ({ logout: vi.fn() }))
+vi.mock('../features/auth/api/login.js', () => ({ login: vi.fn() }))
+vi.mock('../features/auth/api/registerUser.js', () => ({ registerUser: vi.fn() }))
+vi.mock('../features/auth/api/confirmEmail.js', () => ({ confirmEmail: vi.fn() }))
+vi.mock('../features/auth/api/logout.js', () => ({ logout: vi.fn() }))
+vi.mock('../features/payablebills/api/listPayableBills.js', () => ({
+  listPayableBills: vi.fn(() => Promise.resolve({ bills: [] })),
+}))
+vi.mock('../features/expenses/api/listExpenses.js', () => ({
+  listExpenses: vi.fn(() => Promise.resolve([])),
+}))
+vi.mock('../features/financialgoals/api/getSavingsSuggestion.js', () => ({
+  getSavingsSuggestion: vi.fn(() => Promise.resolve(null)),
+}))
+vi.mock('../features/financialgoals/api/listGoals.js', () => ({
+  listGoals: vi.fn(() => Promise.resolve([])),
+}))
+vi.mock('../features/financialoverview/api/getFinancialOverview.js', () => ({
+  getFinancialOverview: vi.fn(() => Promise.resolve({
+    period: '2026-11',
+    realizedIncome: 0,
+    plannedIncome: 0,
+    realizedExpenses: 0,
+    plannedExpenses: 0,
+    projectedBalance: 0,
+    incomeConsidered: 0,
+    expensesConsidered: 0,
+    commitmentPercent: null,
+    alertThresholdPercent: 80,
+    thresholdReached: false,
+    alert: null,
+  })),
+}))
 
 import { ApiError } from '../shared/api/errors.js'
 import { AuthProvider, useAuth } from '../shared/auth/AuthContext.jsx'
-import { login } from '../features/login/api/login.js'
-import { registerUser } from '../features/register/api/registerUser.js'
-import { confirmEmail } from '../features/confirmemail/api/confirmEmail.js'
-import { logout } from '../features/logout/api/logout.js'
-import LogoutButton from '../features/logout/LogoutButton.jsx'
+import { login } from '../features/auth/api/login.js'
+import { registerUser } from '../features/auth/api/registerUser.js'
+import { confirmEmail } from '../features/auth/api/confirmEmail.js'
+import { logout } from '../features/auth/api/logout.js'
+import LogoutButton from '../features/auth/LogoutButton.jsx'
 import AppRoutes from './AppRoutes.jsx'
 import ProtectedRoute from './ProtectedRoute.jsx'
 
@@ -126,7 +154,7 @@ describe('Fluxo de autenticação entre páginas e rotas', () => {
       password: 'SenhaSegura123',
       passwordConfirmation: 'SenhaSegura123',
     })
-    expect(screen.getByTestId('caminho')).toHaveTextContent('/register')
+    await waitFor(() => expect(screen.getByTestId('caminho')).toHaveTextContent('/confirm-email'))
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull()
   })
 
@@ -152,7 +180,7 @@ describe('Fluxo de autenticação entre páginas e rotas', () => {
     confirmEmail.mockResolvedValue(null)
     renderizarConfirmacao()
 
-    expect(await screen.findByRole('heading', { name: 'E-mail confirmado' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'E-mail confirmado.' })).toBeInTheDocument()
     expect(confirmEmail).toHaveBeenCalledWith('token-valido')
     expect(screen.getByTestId('caminho')).toHaveTextContent('/confirm-email')
 

@@ -1,9 +1,7 @@
 # Product Requirements Document (PRD) — Sistema Aurora
 
-- **Status:** Rascunho v1.1
-- **Data:** novembro de 2026
-- **Cliente (entrevista):** professor Mozart
-- **Equipe:** [preencher]
+- **Status:** Versão v1.1
+- **Data:** novembro de 2026 
 
 ## 1. Visão Geral do Produto
 
@@ -68,11 +66,11 @@ Em caso de conflito entre o enunciado do projeto e a entrevista, a entrevista pr
 - **RF-009 — Consulta de gastos por membro:** Acompanhamento detalhado pelo usuário principal.
 - **RF-012 — Alerta de gastos perto da renda:** Aviso preventivo contra autoconsumo desenfreado.
 - **RF-013 — Aviso de contas próximas do vencimento:** Notificações diárias sobre contas a vencer ou atrasadas.
-- **RF-014 — Alerta de endividamento:** Monitoramento do comprometimento da renda com fixas, parcelas e cartões. *(Status: Pendente de validação de escopo e classificação formal de dívidas; mantido fora da versão acadêmica atual conforme SPEC de NOTIFICATIONS — NOT-03)*.
+- **RF-014 — Alerta de endividamento:** Monitoramento do comprometimento da renda com fixas, parcelas e cartões. _(Status: Pendente de validação de escopo e classificação formal de dívidas; mantido fora da versão acadêmica atual conforme SPEC de NOTIFICATIONS — NOT-03)_.
 - **RF-015 — Relatório de gastos:** Visão por categoria e por pessoa da família, com interface no frontend React consumindo a API existente.
 - **RF-016 — Análise de renda e gastos:** Identificação de padrões comparando com médias de até 3 meses anteriores (exige mínimo de 2 meses de histórico), com interface no frontend React.
-- **RF-017 — Sugestões personalizadas:** Insights informativos baseados nas variações de gastos. *(Status: O backend fornece os dados quantitativos de categorias com aumento estritamente superior a 20% em REPORTS & ANALYTICS; a geração de recomendações textuais personalizadas permanece sem contrato funcional definido e não deve ser simulada pelo frontend)*.
-- **RF-018 — Metas automáticas:** Sugestões de economia calculadas a partir da sobra média familiar realizada dos três meses anteriores. *(Status: Implementada consulta de sobra positiva e confirmação de meta; a recusa de sugestão não possui endpoint ou persistência no backend, atuando apenas como dispensa visual no frontend)*.
+- **RF-017 — Sugestões personalizadas:** Insights informativos baseados nas variações de gastos. _(Status: O backend fornece os dados quantitativos de categorias com aumento estritamente superior a 20% em REPORTS & ANALYTICS; a geração de recomendações textuais personalizadas permanece sem contrato funcional definido e não deve ser simulada pelo frontend)_.
+- **RF-018 — Metas automáticas:** Sugestões de economia calculadas a partir da sobra média familiar realizada dos três meses anteriores. _(Status: Implementada consulta de sobra positiva e confirmação de meta; a recusa de sugestão não possui endpoint ou persistência no backend, atuando apenas como dispensa visual no frontend)_.
 
 Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 
@@ -97,10 +95,10 @@ Se faltar tempo, cortar nesta ordem: RF-018, RF-017, RF-016, RF-015.
 - **RNF-07:** Linguagem simples e acessível nas telas e mensagens.
 - **RNF-08:** Compatibilidade com navegadores modernos.
 
-## 7. Pontos em aberto e definições consolidadas na auditoria
+## 7. Pontos em aberto e definições consolidadas na auditoria(futuras implementações)
 
 1. Pode haver mais de um usuário principal (por exemplo, um casal)?
-2. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)? *(Na versão acadêmica atual, as notificações são consultadas internamente no app pelo Principal via API)*.
+2. Quais alertas ele quer receber e por qual canal (aviso no app, notificação, e-mail)? _(Na versão acadêmica atual, as notificações são consultadas internamente no app pelo Principal via API)_.
 3. Os dependentes precisam de categorias pré-definidas ao lançar um gasto?
 4. Os percentuais dos alertas: o limite de 80% de gastos em relação à renda (RF-012) está ativo e implementado; os alertas de 30% e 50% de endividamento (RF-014 / NOT-03) foram mantidos fora da versão acadêmica atual até que haja uma classificação formal de dívidas no modelo de dados.
 5. Recomendações personalizadas (RF-017): o backend entrega análise de aumento superior a 20% por categoria; a elaboração de textos de recomendação personalizada permanece sem contrato funcional definido e não será simulada pelo frontend.
