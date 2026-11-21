@@ -1,27 +1,106 @@
+/* Login — layout mobile first; desktop em dois painéis abaixo. */
+
 .login {
-  display: grid;
-  place-items: start center;
-  padding-block: var(--space-6);
+  display: block;
+  min-height: 100vh;
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.login__brand {
+  display: none;
+}
+
+/* ----- Mobile: identidade no topo do formulário ----- */
+.login__access {
+  display: block;
+  min-height: 100vh;
 }
 
 .login__form {
   width: 100%;
-  max-width: 28rem;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-5);
   display: grid;
   gap: var(--space-4);
-  padding: var(--space-5);
-  border: 1px solid currentColor;
-  border-radius: var(--radius-md);
 }
 
-.login__title {
+.login__mobile-intro {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.login__access-head {
+  display: none;
+}
+
+.login__logo {
   margin: 0;
   font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
 }
 
+.login__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--aurora-muted);
+  text-transform: uppercase;
+}
+
+.login__mobile-title,
+.login__brand-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  color: var(--aurora-green-700);
+}
+
+.login__mobile-subtitle,
+.login__brand-subtitle,
 .login__subtitle {
   margin: 0;
   font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.login__art {
+  display: grid;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--aurora-green-50);
+  border: 1px solid var(--aurora-green-100);
+}
+
+.login__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.login__sky {
+  fill: var(--aurora-green-50);
+}
+
+.login__sun {
+  fill: var(--aurora-peach);
+}
+
+.login__hill--back {
+  fill: var(--aurora-green-300);
+}
+
+.login__hill--front {
+  fill: var(--aurora-green-500);
+}
+
+.login__fields {
+  display: grid;
+  gap: var(--space-3);
 }
 
 .login__field {
@@ -31,22 +110,67 @@
 
 .login__field label {
   font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-ink);
 }
 
 .login__field input {
   width: 100%;
-  padding: var(--space-2);
-  border: 1px solid currentColor;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
   border-radius: var(--radius-sm);
-  background: Canvas;
-  color: CanvasText;
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.login__field input:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 1px;
+}
+
+.login__field input[aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.login__hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
 }
 
 .login__notice,
 .login__error,
 .login__api-errors {
   font-size: var(--font-size-sm);
+}
+
+.login__notice {
+  color: var(--aurora-green-700);
   font-weight: 600;
+}
+
+.login__error {
+  color: var(--aurora-error);
+  font-weight: 600;
+}
+
+.login__api-errors {
+  color: var(--aurora-error);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.login__api-errors-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.login__api-errors-complement {
+  margin: 0;
+  color: var(--aurora-muted);
 }
 
 .login__api-errors ul {
@@ -55,15 +179,164 @@
 }
 
 .login__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
   padding: var(--space-3);
-  border: 1px solid ButtonText;
+  border: 1px solid var(--aurora-green-700);
   border-radius: var(--radius-sm);
-  background: ButtonFace;
-  color: ButtonText;
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font-weight: 600;
   cursor: pointer;
 }
 
 .login__button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.login__button-arrow {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.login__signup {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-green-700);
+  text-decoration: none;
+  padding: var(--space-2);
+  border: 1px solid var(--aurora-green-500);
+  border-radius: var(--radius-sm);
+}
+
+.login__signup-question,
+.login__signup-arrow {
+  display: none;
+}
+
+.login__signup-cta {
+  font-weight: 600;
+}
+
+.login__mobile-institutional {
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--aurora-border);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+  text-align: center;
+}
+
+/* ----- Desktop: dois painéis ----- */
+@media (min-width: 64rem) {
+  .login {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    min-height: 100vh;
+  }
+
+  .login__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: var(--aurora-green-50);
+  }
+
+  .login__brand-top {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 30rem;
+  }
+
+  .login__eyebrow--brand {
+    color: var(--aurora-green-500);
+  }
+
+  .login__brand-title {
+    font-size: 2.5rem;
+  }
+
+  .login__art {
+    width: 100%;
+    max-width: 30rem;
+    border-radius: 1.25rem;
+    border: none;
+  }
+
+  .login__brand-bottom {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 30rem;
+  }
+
+  .login__quote {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--aurora-green-700);
+  }
+
+  .login__institutional {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--aurora-muted);
+  }
+
+  .login__access {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+  }
+
+  .login__form {
+    max-width: 28rem;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-5);
+  }
+
+  .login__mobile-intro,
+  .login__art--mobile,
+  .login__mobile-institutional {
+    display: none;
+  }
+
+  .login__access-head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .login__title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--aurora-green-700);
+  }
+
+  .login__signup {
+    border: none;
+    padding: 0;
+    text-align: left;
+  }
+
+  .login__signup-question {
+    display: inline;
+    color: var(--aurora-muted);
+  }
+
+  .login__signup-arrow {
+    display: inline;
+  }
+
+  .login__signup-cta {
+    text-decoration: underline;
+  }
 }

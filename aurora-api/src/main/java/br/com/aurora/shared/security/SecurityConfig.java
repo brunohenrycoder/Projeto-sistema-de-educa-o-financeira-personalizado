@@ -53,6 +53,13 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 "/auth/register", "/auth/login", "/auth/confirm-email"
                         ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/familymanagement/accept-invite",
+                                "/api/family-management/accept-invite",
+                                "/familymanagement/accept-invite",
+                                "/family-management/accept-invite"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

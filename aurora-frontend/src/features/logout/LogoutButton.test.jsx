@@ -95,7 +95,7 @@ describe('LogoutButton', () => {
     expect(screen.getByText('conteúdo protegido')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
 
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Bom ter você aqui.' })).toBeInTheDocument())
     expect(logout).toHaveBeenCalledTimes(1)
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull()
     await waitFor(() => expect(screen.getByTestId('encerrando')).toHaveTextContent('false'))
@@ -110,7 +110,7 @@ describe('LogoutButton', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent(MENSAGEM_FALHA_REVOGACAO)
-    expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bom ter você aqui.' })).toBeInTheDocument()
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull()
     expect(screen.getByTestId('encerrando')).toHaveTextContent('false')
     expect(screen.queryByText(/revogação confirmada/i)).not.toBeInTheDocument()
@@ -128,7 +128,7 @@ describe('LogoutButton', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent(MENSAGEM_FALHA_REVOGACAO)
-    expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bom ter você aqui.' })).toBeInTheDocument()
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull()
     expect(screen.getByTestId('encerrando')).toHaveTextContent('false')
     expect(screen.queryByText(/revogação confirmada/i)).not.toBeInTheDocument()
@@ -210,7 +210,7 @@ describe('LogoutButton', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
 
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Bom ter você aqui.' })).toBeInTheDocument())
     expect(screen.queryByText(TOKEN)).not.toBeInTheDocument()
     ;[log, error, warn].forEach((espião) => {
       espião.mock.calls.forEach((argumentos) => {

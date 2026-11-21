@@ -24,4 +24,19 @@
   --breakpoint-sm: 40rem;
   --breakpoint-md: 64rem;
   --content-max-width: 72rem;
+
+  /* Paleta Aurora — interpretação da descrição do protótipo de Login.
+     Valores aproximados: sujeitos a ajuste fino quando a referência
+     oficial (PDF/Figma) estiver disponível para inspeção. */
+  --aurora-green-50: #eef5ee;
+  --aurora-green-100: #dcebdc;
+  --aurora-green-300: #8fbf9a;
+  --aurora-green-500: #4f8a63;
+  --aurora-green-700: #2f5d40;
+  --aurora-peach: #f2b18b;
+  --aurora-ink: #1d2f25;
+  --aurora-muted: #5a6f61;
+  --aurora-surface: #ffffff;
+  --aurora-border: #cddbd0;
+  --aurora-error: #a3342a;
 }

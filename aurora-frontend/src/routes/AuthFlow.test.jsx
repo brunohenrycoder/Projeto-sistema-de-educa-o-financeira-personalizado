@@ -159,7 +159,7 @@ describe('Fluxo de autenticação entre páginas e rotas', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Entrar na conta' }))
 
     expect(screen.getByTestId('caminho')).toHaveTextContent('/login')
-    expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bom ter você aqui.' })).toBeInTheDocument()
   })
 
   it('link inválido mantém a mensagem aprovada e não navega', async () => {
