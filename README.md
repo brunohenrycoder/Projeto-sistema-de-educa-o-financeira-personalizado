@@ -1,209 +1,264 @@
 # Aurora — Sistema de Educação Financeira Personalizada
 
-O **Aurora** é um sistema de educação financeira desenvolvido com o objetivo de auxiliar famílias na organização, no acompanhamento e no planejamento de suas finanças pessoais.
+O **Aurora** é um sistema de educação financeira para famílias. Ele ajuda o responsável a controlar contas a pagar e a receber, permite que cada membro da família registre os próprios gastos e apresenta análises, alertas e sugestões de economia.
 
-A aplicação permite o gerenciamento de despesas, contas a pagar, valores a receber e cartões de crédito, além de oferecer análises financeiras, alertas e sugestões de economia.
+O sistema não é um aplicativo bancário: todas as informações financeiras são registradas manualmente pelos usuários, sem integração com bancos.
 
-O sistema possui dois perfis de acesso: **Principal** e **Dependente**, com permissões específicas para garantir a privacidade e a organização financeira familiar.
+> Projeto acadêmico de Engenharia de Software. **Status: versão acadêmica final.**
 
-## Objetivos do projeto
+## Sumário
 
-- Facilitar o controle financeiro familiar.
-- Permitir o registro e acompanhamento de despesas.
-- Organizar contas a pagar e valores a receber.
-- Disponibilizar análises e relatórios financeiros.
-- Auxiliar na identificação de padrões de consumo.
-- Oferecer sugestões de economia e metas financeiras.
-- Garantir privacidade e controle de acesso entre os membros da família.
-
-## Funcionalidades
-
-### Autenticação e gerenciamento familiar
-- Cadastro de usuário Principal.
-- Login e autenticação.
-- Convite e gerenciamento de Dependentes.
-- Controle de permissões por perfil.
-
-### Gerenciamento financeiro
-- Registro, consulta, edição e exclusão de despesas.
-- Gerenciamento de contas a pagar.
-- Gerenciamento de valores a receber.
-- Gerenciamento de cartões de crédito.
-- Acompanhamento de faturas.
-
-### Análises e planejamento
-- Visualização de despesas por categoria e membro.
-- Acompanhamento do saldo projetado.
-- Relatórios financeiros.
-- Identificação de padrões de consumo.
-- Alertas financeiros implementados; o alerta de endividamento NOT-03 permanece pendente de uma definição explícita de dívidas.
-- Sugestões de economia e metas de poupança.
+- [Perfis de usuário](#perfis-de-usuário)
+- [Funcionalidades](#funcionalidades)
+- [Escopo da versão acadêmica](#escopo-da-versão-acadêmica)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Estrutura do repositório](#estrutura-do-repositório)
+- [Como executar](#como-executar)
+- [Roteiro de demonstração](#roteiro-de-demonstração)
+- [Testes](#testes)
+- [Segurança](#segurança)
+- [Documentação](#documentação)
+- [Controle de versão](#controle-de-versão)
+- [Equipe](#equipe)
 
 ## Perfis de usuário
 
-| Perfil | Permissões |
+| Perfil | O que pode fazer |
 |---|---|
-| Principal | Gerencia o grupo familiar, consulta informações financeiras da família e acessa todas as funcionalidades permitidas ao seu perfil. |
-| Dependente | Registra e gerencia exclusivamente suas próprias despesas, sem acesso aos dados financeiros dos demais membros. |
+| **Principal** (responsável) | Gerencia o grupo familiar, cadastra contas a pagar e a receber, acompanha cartões e faturas, vê os gastos de todos os membros e acessa visão financeira, notificações, relatórios, análises e metas. |
+| **Dependente** | Registra, lista, edita e exclui **somente os próprios gastos**. Não vê saldos, totais, contas nem gastos de outros membros. |
 
-A aplicação aplica as permissões no backend, garantindo que um usuário não consiga acessar informações às quais não possui autorização.
+As permissões são aplicadas **no back-end**. Esconder uma tela no front-end não é a proteção.
 
-## Tecnologias utilizadas
+## Funcionalidades
 
-### Backend
-- **Java** — linguagem de programação.
-- **Spring Boot** — desenvolvimento da API REST.
-- **Spring Data JPA** — persistência e comunicação com o banco.
-- **Spring Security** — autenticação e autorização.
-- **Maven** — gerenciamento de dependências e build.
-- **Flyway** — versionamento e controle das migrations do banco.
+| Módulo | Requisitos | O que entrega |
+|---|---|---|
+| Autenticação | RF-001, RF-002 | Cadastro do responsável, confirmação de e-mail, login, encerramento de sessão e bloqueio temporário após tentativas incorretas |
+| Família | RF-003, RF-004 | Convite e remoção de dependentes, aceite do convite e perfis de acesso |
+| Contas a pagar | RF-005, RF-007 | Cadastro, pagamento, cancelamento, recorrência mensal e histórico |
+| Contas a receber | RF-006, RF-007 | Cadastro, confirmação de recebimento, cancelamento, recorrência mensal e histórico |
+| Gastos | RF-008, RF-009 | Registro rápido; o principal acompanha os gastos de todos, e o dependente só os próprios |
+| Cartões de crédito | RF-010 | Cartão, limite, compras (inclusive parceladas), faturas, pagamentos, estornos e créditos, conforme `docs/spec/credit-cards.md` |
+| Visão financeira | RF-011 | Saldo previsto do período |
+| Notificações | RF-012, RF-013 | Alerta de gastos próximos da renda e aviso de contas a vencer ou atrasadas |
+| Relatórios e análises | RF-015 a RF-017 | Gastos por categoria e por membro, padrões de consumo e sugestões de melhoria |
+| Metas | RF-018 | Sugestão e acompanhamento de metas de economia |
 
-### Frontend
-- A interface React + Vite ainda não está incluída neste repositório; as configurações abaixo preparam sua integração.
+## Escopo da versão acadêmica
 
-### Banco de dados
-- **PostgreSQL** — armazenamento das informações.
+**Fora do escopo** (por decisão do cliente e do PRD):
+
+- Simuladores de empréstimos e de financiamentos.
+- Integração com Open Finance e com bancos.
+
+**Adiado para uma versão futura:**
+
+- **RF-014 — Alerta de endividamento (NOT-03).** O modelo de dados atual não classifica dívidas de forma formal, então o alerta de 30% e 50% da renda não foi implementado nem é simulado na interface. A decisão está registrada no PRD e em `docs/spec/notifications.md`.
+
+Os itens ainda sem definição do cliente estão em "Pontos em aberto" do `docs/prd/PRD.md`.
+
+## Tecnologias
+
+**Back-end**
+
+- Java 25 e Spring Boot 4.1
+- Spring Web, Spring Data JPA, Spring Security (JWT) e Bean Validation
+- Flyway (versionamento do banco) e Maven (com Maven Wrapper)
+- Envio de e-mail por SMTP (confirmação de e-mail e convites)
+
+**Front-end**
+
+- React 19 e Vite 8, com React Router
+- Vitest para testes e ESLint
+- Interface responsiva, com abordagem mobile first
+
+**Banco de dados**
+
+- PostgreSQL
 
 ## Arquitetura
 
-O backend utiliza **Vertical Slice Architecture (VSA)**, organizando o código por funcionalidades. Cada funcionalidade concentra os componentes necessários para sua implementação.
+**Back-end: Vertical Slice Architecture (VSA).** O código é organizado por caso de uso, e não por camada técnica. Cada funcionalidade fica em `features/<contexto>/<casodeuso>/`, com seu endpoint, request, response e service. O que é comum (segurança, tratamento de erros, entidades e componentes de domínio) fica em `shared/`. Os contextos espelham os módulos de `docs/spec/`: `auth`, `familymanagement`, `payablebills`, `receivables`, `expenses`, `creditcards`, `financialoverview`, `notifications`, `reportsanalytics` e `financialgoals`.
 
-Quando implementado, o frontend deverá utilizar organização baseada em funcionalidades (*Feature-based Architecture*).
+**Front-end: organização por funcionalidade.** Em `src/features/` há uma pasta por módulo, e em `src/shared/` ficam o cliente da API (com o token de acesso), a autenticação e a formatação de valores e datas. `src/routes/` reúne as rotas e a proteção por perfil.
 
-A estrutura também possui uma área compartilhada (`shared`), destinada a componentes e recursos utilizados por diferentes funcionalidades.
-
-## Organização do projeto
+## Estrutura do repositório
 
 ```text
 .
-├── .agents/
-├── aurora-api/
-│   ├── src/main/java/br/com/aurora/features/
-│   ├── src/main/java/br/com/aurora/shared/
-│   └── src/main/resources/db/migration/
-├── docs/spec/
+├── aurora-api/                  # Back-end (Spring Boot)
+│   ├── src/main/java/br/com/aurora/
+│   │   ├── features/            # Casos de uso, por contexto
+│   │   └── shared/              # Segurança, erros, domínio e e-mail
+│   └── src/main/resources/db/migration/   # Migrations do Flyway
+├── aurora-frontend/             # Front-end (React + Vite)
+│   └── src/
+│       ├── features/
+│       ├── shared/
+│       └── routes/
+├── aurora-design-reference/     # Protótipos e guia de design
+├── docs/
+│   ├── prd/PRD.md               # Requisitos do produto
+│   ├── adr/ADR.md               # Decisões de arquitetura
+│   └── spec/                    # Especificação por módulo
+├── AGENTS.md                    # Diretrizes para assistentes de código
 └── README.md
 ```
 
-## Pré-requisitos
+## Como executar
 
-Antes de executar o projeto, é necessário ter instalado:
+### Pré-requisitos
 
-- Java JDK 25.
-- Maven ou utilizar o Maven Wrapper incluído no backend.
-- PostgreSQL.
-- Git.
+- Java JDK 25
+- PostgreSQL
+- Node.js 22 LTS ou superior e npm
+- Git
+- Um servidor de e-mail de teste (recomendado: [Mailpit](https://github.com/axllent/mailpit)), porque o cadastro exige confirmar o e-mail
 
-## Configuração do ambiente
+Os comandos abaixo usam PowerShell (Windows). No Linux e no macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
 
 ### 1. Clonar o repositório
 
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd <PASTA_DO_PROJETO>
+```powershell
+git clone https://github.com/brunohenrycoder/Projeto-sistema-de-educa-o-financeira-personalizado.git
+cd Projeto-sistema-de-educa-o-financeira-personalizado
 ```
 
-### 2. Configurar o backend
+### 2. Criar o banco de dados
 
-Acesse o diretório do Spring Boot:
+No PostgreSQL, crie o banco:
 
-```bash
-cd aurora-api
+```sql
+CREATE DATABASE aurora;
 ```
 
-Copie o modelo para `.env` e substitua os valores indicados para uso local:
+As tabelas são criadas pelo Flyway na primeira execução do back-end.
+
+### 3. Subir o servidor de e-mail de teste
+
+Com Docker:
 
 ```powershell
+docker run -d --name mailpit -p 8025:8025 -p 1025:1025 axllent/mailpit
+```
+
+Os e-mails enviados pelo Aurora (confirmação de cadastro e convites) aparecem em **http://localhost:8025**, e nenhum e-mail é enviado de verdade.
+
+### 4. Configurar e executar o back-end
+
+```powershell
+cd aurora-api
 Copy-Item .env.example .env
 ```
 
-O Spring carrega esse arquivo local quando ele existe. O `.env` está ignorado pelo Git; não versione credenciais. Em ambientes compartilhados, forneça as variáveis pelo mecanismo de configuração do ambiente.
+Edite o `.env` e preencha, no mínimo, `DB_PASSWORD`, `JWT_SECRET` e `MAIL_FROM`. O arquivo `.env` é ignorado pelo Git, e nenhuma credencial deve ser versionada. Se preferir, defina as variáveis na própria janela do terminal:
 
-Configurações principais:
+```powershell
+$env:DB_PASSWORD="sua_senha_local"
+$env:JWT_SECRET="chave_aleatoria_local_com_pelo_menos_32_bytes"
+$env:MAIL_FROM="no-reply@aurora.local"
+```
+
+Principais variáveis:
 
 | Variável | Finalidade | Exemplo de desenvolvimento |
 |---|---|---|
 | `DB_URL` | URL JDBC do PostgreSQL | `jdbc:postgresql://localhost:5432/aurora` |
 | `DB_USERNAME` | Usuário do banco | `postgres` |
-| `DB_PASSWORD` | Senha do banco; obrigatória | Defina localmente; o modelo não contém credencial |
-| `JWT_SECRET` | Chave HMAC; obrigatória, mínimo de 32 bytes UTF-8 | Gere uma chave aleatória local; não use o placeholder |
-| `JWT_EXPIRATION` | Validade do JWT em milissegundos | `86400000` |
-| `CORS_ALLOWED_ORIGINS` | Origens explícitas permitidas, separadas por vírgula | `http://localhost:5173` |
+| `DB_PASSWORD` | Senha do banco (obrigatória) | Definida localmente |
+| `JWT_SECRET` | Chave de assinatura do JWT (obrigatória, mínimo de 32 bytes) | Chave aleatória local |
+| `JWT_EXPIRATION` | Validade do token, em milissegundos | `86400000` |
+| `CORS_ALLOWED_ORIGINS` | Origens permitidas, separadas por vírgula | `http://localhost:5173` |
 | `EMAIL_CONFIRMATION_URL` | Página de confirmação de e-mail | `http://localhost:5173/confirm-email` |
 | `FAMILY_INVITE_URL` | Página de convite familiar | `http://localhost:5173/family-invite` |
-| `SMTP_HOST`, `SMTP_PORT` | Servidor e porta SMTP | `localhost`, `1025` para um servidor local de captura de e-mail |
-| `SMTP_USERNAME`, `SMTP_PASSWORD` | Credenciais SMTP, quando exigidas | Fornecidas pelo ambiente/provedor |
-| `SMTP_AUTH` | Habilita autenticação SMTP | `true` ou `false` |
-| `SMTP_STARTTLS`, `SMTP_STARTTLS_REQUIRED` | Habilita/exige STARTTLS | `true` ou `false` |
-| `SMTP_SSL` | Habilita SSL SMTP | `true` ou `false`; não combinar com STARTTLS sem suporte do provedor |
-| `SMTP_CONNECTION_TIMEOUT`, `SMTP_TIMEOUT`, `SMTP_WRITE_TIMEOUT` | Tempos-limite SMTP em milissegundos | `5000` |
-| `MAIL_FROM` | Remetente obrigatório no envio de e-mails | Endereço autorizado pelo provedor |
+| `SMTP_HOST`, `SMTP_PORT` | Servidor de e-mail | `localhost`, `1025` (Mailpit) |
+| `MAIL_FROM` | Remetente dos e-mails (obrigatório) | `no-reply@aurora.local` |
 
-```powershell
-$env:DB_PASSWORD="sua_senha_local"
-$env:JWT_SECRET="chave_aleatoria_local_com_pelo_menos_32_bytes"
-```
+A lista completa, incluindo as opções de autenticação e TLS do SMTP, está em `aurora-api/.env.example`. O CORS permite somente as origens informadas (nunca use `*`).
 
-As URLs de confirmação e convite apontam por padrão para a porta `5173` do Vite. CORS permite apenas `CORS_ALLOWED_ORIGINS`, incluindo os headers `Authorization` e `Content-Type` necessários ao JWT; autenticação por cookie/credenciais não está habilitada. Em ambiente compartilhado, configure as origens e URLs públicas apropriadas. Não use `*`.
-
-O SMTP não envia e-mails sem configuração externa. Configure host, porta, autenticação, TLS/SSL e remetente conforme o provedor escolhido; o projeto não define um provedor nem credenciais.
-
-### 3. Executar o backend
-
-No diretório do backend, execute:
+Execute:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-Para executar os testes:
+A API fica em **http://localhost:8080**.
+
+### 5. Configurar e executar o front-end
+
+Em outro terminal:
+
+```powershell
+cd aurora-frontend
+Copy-Item .env.example .env
+npm install
+npm run dev
+```
+
+O arquivo `.env` do front-end define a URL da API (`VITE_API_BASE_URL=http://localhost:8080`). A aplicação abre em **http://localhost:5173**.
+
+Para gerar a versão de produção: `npm run build`.
+
+## Roteiro de demonstração
+
+Com o back-end, o front-end e o Mailpit em execução:
+
+1. **Cadastrar o responsável:** em `/register`, preencha nome, e-mail e senha (mínimo de 8 caracteres).
+2. **Confirmar o e-mail:** abra o Mailpit (http://localhost:8025), clique no link de confirmação e entre com o e-mail e a senha.
+3. **Convidar um dependente:** na tela de família, informe o e-mail do dependente. O convite chega no Mailpit.
+4. **Aceitar o convite:** abra o link do convite, defina a senha do dependente e entre com ele.
+5. **Como dependente:** registre um gasto, edite-o e exclua-o. Confira que só os gastos próprios aparecem e que as telas do responsável (visão financeira, contas, cartões, relatórios) não ficam disponíveis.
+6. **Como responsável:** cadastre contas a pagar e a receber, registre um cartão e uma compra, e veja o gasto do dependente, a visão financeira, as notificações, os relatórios e as metas.
+7. **Celular:** repita o fluxo em uma janela estreita do navegador (cerca de 375 px de largura) para conferir a versão mobile.
+
+## Testes
+
+**Back-end** (na pasta `aurora-api`):
 
 ```powershell
 .\mvnw.cmd test
 ```
 
-As migrations do banco são gerenciadas pelo Flyway e ficam em:
+Os testes usam o banco configurado em `DB_URL`. Para não alterar os seus dados de desenvolvimento, crie um banco separado (por exemplo, `aurora_test`) e aponte `DB_URL` para ele antes de rodar.
 
-```text
-src/main/resources/db/migration/
+**Front-end** (na pasta `aurora-frontend`):
+
+```powershell
+npm test
+npm run lint
 ```
+
+A suíte do front-end pode levar alguns minutos.
 
 ## Segurança
 
-O Aurora adota medidas para proteger os dados dos usuários:
+- Senhas armazenadas somente como hash.
+- Autenticação por JWT, com validação do usuário e da sessão a cada requisição protegida. Um membro removido perde o acesso na hora, mesmo com um token ainda válido.
+- Autorização por perfil no back-end e isolamento dos dados de cada grupo familiar. Um registro de outra família é tratado como não encontrado.
+- Bloqueio temporário de login após tentativas incorretas.
+- Configurações sensíveis por variáveis de ambiente. Nenhum segredo é versionado.
 
-- Armazenamento de senhas utilizando hash criptográfico.
-- Autenticação e autorização no backend.
-- Controle de acesso baseado em perfis.
-- Isolamento dos dados de cada grupo familiar.
-- Verificação de propriedade dos registros.
-- Proteção das informações financeiras dos Dependentes.
-- Uso de variáveis de ambiente para configurações sensíveis.
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [`docs/prd/PRD.md`](docs/prd/PRD.md) | Visão do produto, escopo, requisitos, regras de negócio e pontos em aberto |
+| [`docs/adr/ADR.md`](docs/adr/ADR.md) | Decisões de arquitetura e de implementação |
+| [`docs/spec/`](docs/spec/) | Especificação por módulo, com os contratos da API usados pelo front-end |
+| [`aurora-design-reference/`](aurora-design-reference/) | Protótipos das telas e guia de design |
+
+Quando houver divergência entre documentos, vale a ordem: especificação do módulo, PRD e ADR.
 
 ## Controle de versão
 
-O projeto utiliza Git e GitHub para controle de versão e colaboração.
+O projeto usa Git e GitHub:
 
-As branches principais são:
+- `main`: versão estável e entregue.
+- `dev`: integração das funcionalidades.
+- Branches de funcionalidade (por exemplo, `feature/...`) para cada entrega, integradas por pull request.
 
-- `main`: versão estável do projeto.
-- `dev`: branch destinada ao desenvolvimento e integração das funcionalidades.
-
-Funcionalidades maiores podem ser desenvolvidas em branches específicas e posteriormente integradas à `dev`.
-
-## Escopo do projeto
-
-O Aurora tem como foco a educação e organização financeira familiar.
-
-Não fazem parte do escopo atual:
-- Simuladores de empréstimos e financiamentos.
-- Integração com Open Finance.
-
-## Status do projeto
-
-<code>Em desenvolvimento</code>
-
-Projeto acadêmico desenvolvido como parte de uma atividade universitária.
 
 ---
 
