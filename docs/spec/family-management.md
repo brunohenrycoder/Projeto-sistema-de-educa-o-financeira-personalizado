@@ -97,20 +97,77 @@ Especificar a criação e administração do grupo familiar, o convite de Depend
 - [ ] A remoção preserva o histórico e revoga sessões.
 - [ ] Usuários de grupos diferentes não conseguem acessar dados uns dos outros.
 
-## 8. Endpoints e regras implementadas no backend
+## 8. Endpoints da API e contratos para o frontend
 
-A implementação atual expõe os seguintes endpoints no backend, todos protegidos por autenticação e autorização:
+A implementação expõe os seguintes endpoints no backend (rotas disponíveis sob `/api/familymanagement`, `/api/family-management` ou sem prefixo `/api`):
 
-- `POST /api/familymanagement/invite` — principal convoca um dependente para o grupo familiar.
-- `POST /api/familymanagement/accept-invite` — dependente aceita o convite e conclui seu cadastro com senha própria.
-- `GET /api/familymanagement/members` — principal lista os integrantes ativos do grupo familiar.
-- `PUT /api/familymanagement/members/{memberId}` — principal altera nome e e-mail do integrante, sem permitir alteração de perfil, grupo familiar ou credenciais.
-- `DELETE /api/familymanagement/members/{memberId}` — principal remove um dependente e revoga imediatamente suas sessões ativas.
+- `POST /api/familymanagement/invite` — Principal convida um novo Dependente para o grupo familiar.
+  - **Exclusivo do Principal.**
+  - **Payload:**
+    ```json
+    {
+      "email": "filho@example.com"
+    }
+    ```
+  - **Validações:** e-mail válido, não pode ser o e-mail do próprio Principal nem de usuário já cadastrado no sistema.
+  - **Resposta (201 Created):**
+    ```json
+    {
+      "inviteId": "uuid...",
+      "familyGroupId": "uuid...",
+      "invitedEmail": "filho@example.com",
+      "status": "PENDENTE",
+      "createdAt": "2026-11-18T10:00:00",
+      "expiresAt": "2026-11-20T10:00:00"
+    }
+    ```
+  - **Disparo de convite:** O sistema envia e-mail com link no formato `<family-invite-url>#token=<rawToken>`, com validade estrita de 48 horas. Se houver convites pendentes anteriores para o mesmo e-mail no grupo, são invalidados. O token não é retornado no corpo da resposta da API.
 
-Os acessos administrativos são aplicados no backend por `UsuarioAutenticado` e verificações de perfil/grupo familiar em toda operação sensível.
+- `POST /api/familymanagement/accept-invite` — Dependente aceita o convite, define seu nome e sua senha.
+  - **Endpoint público (não exige autenticação prévia).**
+  - **Fluxo no frontend:** A página de convite no React lê o fragmento `#token=<rawToken>` da URL e o Dependente preenche nome e senha:
+  - **Payload:**
+    ```json
+    {
+      "token": "token-extraido-da-url",
+      "email": "filho@example.com",
+      "name": "Pedro Silva",
+      "password": "SenhaSegura123",
+      "passwordConfirmation": "SenhaSegura123"
+    }
+    ```
+  - **Validações:** `token` válido e não expirado (<48h); `email` correspondente ao convite; `name` entre 3 e 100 caracteres; `password` mínimo 8 caracteres; `passwordConfirmation` coincidente.
+  - **Resposta (201 Created):**
+    ```json
+    {
+      "userId": "uuid...",
+      "familyGroupId": "uuid...",
+      "name": "Pedro Silva",
+      "email": "filho@example.com",
+      "role": "DEPENDENTE",
+      "status": "ATIVO",
+      "emailConfirmed": true,
+      "createdAt": "2026-11-18T10:30:00"
+    }
+    ```
+  - Após aceitar, o convite é marcado como aceito, a conta do Dependente é criada com perfil `DEPENDENTE`, `emailConfirmed = true` e status `ATIVO`, permitindo login imediato via `POST /api/auth/login`.
+
+- `GET /api/familymanagement/members` — Principal lista os membros do grupo familiar.
+  - **Exclusivo do Principal.**
+  - **Resposta (200 OK):** Lista de integrantes ativos `[{ "id": "uuid...", "name": "...", "email": "...", "role": "DEPENDENTE", "status": "ATIVO", "createdAt": "..." }]`.
+
+- `PUT /api/familymanagement/members/{memberId}` — Principal atualiza dados cadastrais de um integrante.
+  - **Exclusivo do Principal.**
+  - **Payload:** `{"name": "Novo Nome", "email": "novo@example.com"}`.
+  - Não permite alteração de perfil (`role`), de grupo familiar ou de senhas.
+
+- `DELETE /api/familymanagement/members/{memberId}` — Principal remove um Dependente do grupo familiar.
+  - **Exclusivo do Principal.**
+  - **Efeito:** Marca o usuário como `REMOVIDO` (remoção lógica), revoga imediatamente todas as sessões e tokens ativos do usuário removido no servidor. Registros financeiros históricos do usuário são preservados intactos.
+  - **Resposta (204 No Content).**
 
 ## 9. Dependências e observações
 
 - Autenticação e validação de sessão estão em `auth.md`.
 - Despesas estão detalhadas em `expenses.md`.
-- A validade temporal do convite não recebe duração fixa nesta especificação.
+- A validade temporal do convite é de 48 horas, conforme RN-FAM-09.

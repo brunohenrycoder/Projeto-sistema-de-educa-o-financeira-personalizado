@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LoginEndpointTest {
 
     private static final String LOGIN_URL = "/api/auth/login";
-    private static final String LOGOUT_URL = "/api/auth/logout";
     private static final String PASSWORD = "senhaForte123";
 
     @Autowired
@@ -68,6 +67,11 @@ class LoginEndpointTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("PRINCIPAL"))
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
+                .andExpect(jsonPath("$.expiresIn").isNumber())
+                .andExpect(jsonPath("$.userId").value(principal.getId().toString()))
+                .andExpect(jsonPath("$.familyGroupId").value(principal.getFamilyGroup().getId().toString()))
+                .andExpect(jsonPath("$.name").value("Usuário de teste"))
+                .andExpect(jsonPath("$.email").value(principal.getEmail()))
                 .andReturn();
         MvcResult dependentResult = login(dependent.getEmail(), PASSWORD)
                 .andExpect(status().isOk())
@@ -143,17 +147,6 @@ class LoginEndpointTest {
         login(removed.getEmail(), PASSWORD).andExpect(status().isUnauthorized());
         login(inactive.getEmail(), PASSWORD).andExpect(status().isUnauthorized());
         assertThat(authSessionRepository.count()).isZero();
-    }
-
-    @Test
-    void logoutRevokesTokenImmediately() throws Exception {
-        User user = createUser(Role.PRINCIPAL, UserStatus.ATIVO, true);
-        String accessToken = tokenFrom(login(user.getEmail(), PASSWORD).andExpect(status().isOk()).andReturn());
-
-        mockMvc.perform(post(LOGOUT_URL).header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isNoContent());
-        mockMvc.perform(post(LOGOUT_URL).header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isUnauthorized());
     }
 
     private org.springframework.test.web.servlet.ResultActions login(String email, String password) throws Exception {

@@ -108,6 +108,8 @@ public class LoginService {
                 .expiresIn(tokenExpirationMs / 1000)
                 .userId(user.getId())
                 .familyGroupId(user.getFamilyGroup().getId())
+                .name(user.getName())
+                .email(user.getEmail())
                 .role(user.getRole())
                 .build();
     }

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,20 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    @Value("${security.jwt.secret:aurora-api-secret-key-must-be-at-least-256-bits-long-for-hmac-sha-security}")
+    @Value("${security.jwt.secret}")
     private String secret;
 
     @Value("${security.jwt.expiration:86400000}")
     private long expirationMs;
+
+    @PostConstruct
+    void validateSigningKey() {
+        try {
+            getSigningKey();
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalStateException("JWT_SECRET deve conter pelo menos 32 bytes UTF-8.", exception);
+        }
+    }
 
     public String generateToken(UsuarioAutenticado usuario, UUID sessionId) {
         Date issuedAt = new Date();

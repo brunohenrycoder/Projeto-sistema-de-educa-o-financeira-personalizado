@@ -1,0 +1,358 @@
+/* Cadastro — layout mobile first; desktop em dois painéis (identidade Aurora). */
+
+.register {
+  display: block;
+  min-height: 100vh;
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.register__brand {
+  display: none;
+}
+
+.register__access {
+  display: block;
+  min-height: 100vh;
+}
+
+.register__form {
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.register__mobile-intro {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.register__access-head {
+  display: none;
+}
+
+.register__logo {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.register__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--aurora-muted);
+  text-transform: uppercase;
+}
+
+.register__mobile-title,
+.register__brand-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  color: var(--aurora-green-700);
+}
+
+.register__mobile-subtitle,
+.register__brand-subtitle,
+.register__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.register__art {
+  display: grid;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--aurora-green-50);
+  border: 1px solid var(--aurora-green-100);
+}
+
+.register__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.register__sky { fill: var(--aurora-green-50); }
+.register__sun { fill: var(--aurora-peach); }
+.register__hill--back { fill: var(--aurora-green-300); }
+.register__hill--front { fill: var(--aurora-green-500); }
+
+.register__notice-block {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.register__notice-title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.register__notice-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.register__fields {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.register__field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.register__field label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-ink);
+}
+
+.register__field input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.register__field input:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 1px;
+}
+
+.register__field input[aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.register__help {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--aurora-muted);
+}
+
+.register__error {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-error);
+}
+
+.register__profile {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+}
+
+.register__profile-title {
+  margin: 0 0 var(--space-1);
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.register__profile-row {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-ink);
+}
+
+.register__profile-note {
+  margin: var(--space-1) 0 0;
+  font-size: 0.8rem;
+  color: var(--aurora-muted);
+}
+
+.register__api-errors,
+.register__success {
+  font-size: var(--font-size-sm);
+}
+
+.register__api-errors {
+  color: var(--aurora-error);
+  border: 1px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+}
+
+.register__api-errors ul {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+.register__success {
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+.register__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.register__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register__button-arrow {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.register__button-desktop {
+  display: none;
+}
+
+.register__signin {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-green-700);
+  text-decoration: none;
+  padding: var(--space-2);
+}
+
+.register__signin-arrow {
+  display: none;
+}
+
+.register__mobile-institutional {
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--aurora-border);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+  text-align: center;
+}
+
+/* ----- Desktop: dois painéis ----- */
+@media (min-width: 64rem) {
+  .register {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    min-height: 100vh;
+  }
+
+  .register__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: var(--aurora-green-50);
+  }
+
+  .register__brand-top {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 30rem;
+  }
+
+  .register__eyebrow--brand {
+    color: var(--aurora-green-500);
+  }
+
+  .register__brand-title {
+    font-size: 2.5rem;
+  }
+
+  .register__art {
+    width: 100%;
+    max-width: 30rem;
+    border-radius: 1.25rem;
+    border: none;
+  }
+
+  .register__brand-bottom {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 30rem;
+  }
+
+  .register__quote {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--aurora-green-700);
+  }
+
+  .register__institutional {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--aurora-muted);
+  }
+
+  .register__access {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+  }
+
+  .register__form {
+    max-width: 28rem;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-4);
+  }
+
+  .register__mobile-intro,
+  .register__art--mobile,
+  .register__notice-block--mobile,
+  .register__mobile-institutional,
+  .register__button-mobile {
+    display: none;
+  }
+
+  .register__access-head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .register__title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--aurora-green-700);
+  }
+
+  .register__button-desktop {
+    display: inline;
+  }
+
+  .register__signin {
+    text-align: left;
+    padding: 0;
+  }
+
+  .register__signin-arrow {
+    display: inline;
+  }
+}

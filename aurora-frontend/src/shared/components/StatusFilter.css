@@ -1,0 +1,58 @@
+/* Filtro segmentado reutilizável para visualizações por status. */
+
+.status-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.status-filter__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status-filter__button:hover {
+  border-color: var(--aurora-green-500);
+  color: var(--aurora-green-700);
+}
+
+.status-filter__button:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.status-filter__button[aria-pressed='true'] {
+  border-color: var(--aurora-green-700);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+}
+
+.status-filter__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-50);
+  color: var(--aurora-green-700);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-filter__button[aria-pressed='true'] .status-filter__count {
+  background: var(--aurora-surface);
+  color: var(--aurora-green-700);
+}

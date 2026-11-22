@@ -1,0 +1,182 @@
+/* Cadastro de recebimento — mobile first, alinhado ao formulário de contas a pagar. */
+
+.register-receivable {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  padding-block: var(--space-6);
+}
+
+.register-receivable__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.register-receivable__breadcrumb [aria-current='page'] {
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+.register-receivable__hero {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.register-receivable__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.register-receivable__subtitle {
+  max-width: 40rem;
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--aurora-muted);
+}
+
+.register-receivable__form {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 30rem;
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+}
+
+.register-receivable__field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.register-receivable__field--amount {
+  padding: var(--space-4);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.register-receivable__label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--aurora-muted);
+}
+
+.register-receivable__field--amount .register-receivable__label {
+  color: var(--aurora-green-700);
+}
+
+.register-receivable__input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-md);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.register-receivable__field--amount .register-receivable__input {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--aurora-green-700);
+}
+
+.register-receivable__input:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.register-receivable__input[aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.register-receivable__error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-error);
+}
+
+.register-receivable__api-errors {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-error);
+  border-left: 3px solid var(--aurora-error);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+}
+
+.register-receivable__api-errors p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-error);
+}
+
+.register-receivable__success {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+  max-width: 30rem;
+  padding: var(--space-5);
+  border: 1px solid var(--aurora-green-100);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-50);
+}
+
+.register-receivable__success p {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--aurora-green-700);
+}
+
+.register-receivable__submit {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-md);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.register-receivable__submit:hover {
+  background: var(--aurora-green-500);
+  border-color: var(--aurora-green-500);
+}
+
+.register-receivable__submit:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 2px;
+}
+
+.register-receivable__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (min-width: 64rem) {
+  .register-receivable__title {
+    font-size: 2rem;
+  }
+
+  .register-receivable__form,
+  .register-receivable__success {
+    max-width: 34rem;
+  }
+}

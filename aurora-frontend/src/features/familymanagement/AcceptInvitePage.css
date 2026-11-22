@@ -1,0 +1,205 @@
+/* Aceite de convite — mobile first; dois painéis no desktop. */
+
+.accept-invite {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  min-height: 100vh;
+  padding: var(--space-6) var(--space-5);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.accept-invite__head {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 28rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.accept-invite__logo {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--aurora-green-700);
+}
+
+.accept-invite__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--aurora-muted);
+  text-transform: uppercase;
+}
+
+.accept-invite__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  color: var(--aurora-green-700);
+}
+
+.accept-invite__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+}
+
+.accept-invite__art {
+  display: grid;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--aurora-green-50);
+  border: 1px solid var(--aurora-green-100);
+}
+
+.accept-invite__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.accept-invite__sky { fill: var(--aurora-green-50); }
+.accept-invite__sun { fill: var(--aurora-peach); }
+.accept-invite__hill--back { fill: var(--aurora-green-300); }
+.accept-invite__hill--front { fill: var(--aurora-green-500); }
+
+.accept-invite__form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 28rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.accept-invite__field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.accept-invite__field label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-ink);
+}
+
+.accept-invite__field input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-border);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+.accept-invite__field input:focus-visible {
+  outline: 2px solid var(--aurora-green-500);
+  outline-offset: 1px;
+}
+
+.accept-invite__field input[aria-invalid='true'] {
+  border-color: var(--aurora-error);
+}
+
+.accept-invite__field-error {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--aurora-error);
+}
+
+.accept-invite__api-errors {
+  color: var(--aurora-error);
+  font-size: var(--font-size-sm);
+}
+
+.accept-invite__api-errors ul {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+.accept-invite__error p {
+  font-size: var(--font-size-sm);
+  color: var(--aurora-error);
+}
+
+.accept-invite__success p {
+  font-size: var(--font-size-sm);
+  color: var(--aurora-green-700);
+  font-weight: 600;
+}
+
+.accept-invite__button {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--aurora-green-700);
+  border-radius: var(--radius-sm);
+  background: var(--aurora-green-700);
+  color: var(--aurora-surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.accept-invite__success .accept-invite__button {
+  width: auto;
+  justify-self: start;
+  align-self: start;
+}
+
+.accept-invite__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.accept-invite__link,
+.accept-invite__success,
+.accept-invite__error {
+  max-width: 28rem;
+  width: 100%;
+  margin-inline: auto;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.accept-invite__link {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--aurora-green-700);
+}
+
+.accept-invite__quote {
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--aurora-border);
+  font-size: var(--font-size-sm);
+  color: var(--aurora-muted);
+  text-align: center;
+}
+
+@media (min-width: 64rem) {
+  .accept-invite {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: center;
+    gap: var(--space-8);
+    padding-inline: var(--space-8);
+  }
+
+  .accept-invite__head,
+  .accept-invite__form,
+  .accept-invite__success,
+  .accept-invite__error,
+  .accept-invite__link {
+    margin-inline: 0;
+    max-width: 30rem;
+  }
+
+  .accept-invite__head {
+    align-self: center;
+  }
+
+  .accept-invite__title {
+    font-size: 2.5rem;
+  }
+}

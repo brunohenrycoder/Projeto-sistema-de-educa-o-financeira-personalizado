@@ -1,0 +1,109 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  line-height: var(--line-height-base);
+  background: var(--aurora-surface);
+  color: var(--aurora-ink);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: LinkText;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+}
+
+/* Refinamento visual das áreas autenticadas. Escopo explícito: páginas que
+   usam .container ou .home. Login/Cadastro usam .login/.register/.confirm-email
+   e permanecem exatamente como estavam. */
+
+:is(.container, .home) {
+  min-height: 100vh;
+  background: var(--aurora-canvas);
+}
+
+:is(.container, .home) h1 {
+  font-size: var(--font-size-display);
+}
+
+:is(.container, .home) :is(
+    [class*='__section'],
+    [class*='__card'],
+    [class*='__summary'],
+    [class*='__panel']
+  ) {
+  border-color: var(--aurora-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+:is(.container, .home) :is(button, a, input, select, textarea):focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+:is(.container, .home) [class*='__breadcrumb'] {
+  color: var(--aurora-muted);
+}
+
+:is(.container, .home) [class*='__breadcrumb'] [aria-hidden='true'] {
+  color: var(--aurora-green-300);
+}
+
+:is(.container, .home) [class*='__eyebrow'] {
+  margin: 0;
+  color: var(--aurora-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+:is(.container, .home) tbody tr:nth-child(even) {
+  background: var(--aurora-surface-tint);
+}
+
+@media (max-width: 40rem) {
+  :is(.container, .home) {
+    padding-inline: var(--space-3);
+  }
+
+  :is(.container, .home) h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  :is(.container, .home) :is(
+      [class*='__section'],
+      [class*='__card'],
+      [class*='__summary'],
+      [class*='__panel']
+    ) {
+    padding: var(--space-4);
+  }
+}

@@ -103,6 +103,8 @@ class LoginServiceTest {
         assertThat(response.getAccessToken()).isEqualTo("jwt-token");
         assertThat(response.getRole()).isEqualTo(Role.PRINCIPAL);
         assertThat(response.getExpiresIn()).isEqualTo(3600);
+        assertThat(response.getName()).isEqualTo("Principal");
+        assertThat(response.getEmail()).isEqualTo(EMAIL);
         assertThat(attempt.getFailedAttempts()).isZero();
         ArgumentCaptor<AuthSession> sessionCaptor = ArgumentCaptor.forClass(AuthSession.class);
         verify(authSessionRepository).save(sessionCaptor.capture());
@@ -142,6 +144,8 @@ class LoginServiceTest {
         LoginResponse response = loginService.login(new LoginRequest(EMAIL, PASSWORD));
 
         assertThat(response.getAccessToken()).isEqualTo("jwt-token");
+        assertThat(response.getName()).isEqualTo("Principal");
+        assertThat(response.getEmail()).isEqualTo(EMAIL);
         assertThat(attempt.getFailedAttempts()).isZero();
         assertThat(attempt.getLastFailedAt()).isNull();
         assertThat(attempt.getLockedUntil()).isNull();
