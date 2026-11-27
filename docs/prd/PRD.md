@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD) — Sistema Aurora
 
 - **Status:** Versão v1.1
-- **Data:** novembro de 2026 
+- **Data:** novembro de 2026
 
 ## 1. Visão Geral do Produto
 
